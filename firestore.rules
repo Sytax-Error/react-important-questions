@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Questions collection
+    match /questions/{questionId} {
+      // Anyone can read published questions
+      allow read: if resource.data.isPublished == true && resource.data.status == 'published';
+
+      // Admins can read all questions (published and unpublished)
+      allow read: if isAdmin();
+
+      // Only admins can create questions
+      allow create: if isAdmin() &&
+        request.resource.data.keys().hasAll(['question', 'slug', 'topic', 'category', 'shortAnswer', 'detailedAnswer', 'importantPoints', 'followUpQuestions', 'tags', 'difficulty', 'isPublished', 'status', 'createdBy', 'updatedBy']) &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.updatedBy == request.auth.uid;
+
+      // Only admins can update questions
+      allow update: if isAdmin() &&
+        request.resource.data.updatedBy == request.auth.uid &&
+        request.resource.data.diffKeys().hasOnly(['question', 'slug', 'topic', 'category', 'shortAnswer', 'detailedAnswer', 'code', 'language', 'importantPoints', 'followUpQuestions', 'tags', 'difficulty', 'isPublished', 'status', 'updatedBy', 'updatedAt']);
+
+      // Only admins can delete questions
+      allow delete: if isAdmin();
+    }
+
+    // Admins collection - users can only read their own admin document
+    match /admins/{adminId} {
+      // Users can read their own admin document for authorization
+      allow read: if request.auth != null && request.auth.uid == adminId;
+
+      // No one can create, update, or delete admin documents from the client
+      // Admin documents must be created manually in Firebase Console
+      allow create, update, delete: if false;
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
