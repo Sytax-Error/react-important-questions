@@ -16,6 +16,7 @@ import { PageLoader } from "../../components/ui/LoadingSpinner";
 import { Button } from "../../components/ui/Button";
 import { InterviewQuestion } from "../../types/questions";
 import { format } from "date-fns";
+import { getQuestionBySlug } from "../../features/questions/services/questionService";
 
 export function QuestionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,12 +28,21 @@ export function QuestionDetailPage() {
     if (!slug) return;
     setLoading(true);
     setError(null);
-    // TODO: Fetch question by slug from Firestore
-    setTimeout(() => {
-      setQuestion(null);
-      setLoading(false);
-      setError("Question not found");
-    }, 500);
+
+    getQuestionBySlug(slug)
+      .then((questionData) => {
+        if (questionData && questionData.isPublished) {
+          setQuestion(questionData);
+        } else {
+          setError("Question not found");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching question:", err);
+        setError("Failed to load question");
+        setLoading(false);
+      });
   }, [slug]);
 
   if (loading) {

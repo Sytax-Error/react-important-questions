@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/Card";
 import { TopicBadge, DifficultyBadge } from "../../components/ui/Badge";
-import { TOPICS, DIFFICULTIES } from "../../types/question";
+import { usePublicQuestionMeta } from "../../features/questions/hooks/usePublicQuestionMeta";
 
 export function HomePage() {
+  const { totalQuestions, topics, difficulties } = usePublicQuestionMeta();
+
   const stats = [
     {
       label: "Questions",
-      value: "0",
+      value: totalQuestions.toString(),
       icon: (
         <svg
           className="h-6 w-6"
@@ -27,7 +29,7 @@ export function HomePage() {
     },
     {
       label: "Topics",
-      value: TOPICS.length.toString(),
+      value: topics.length.toString(),
       icon: (
         <svg
           className="h-6 w-6"
@@ -47,7 +49,7 @@ export function HomePage() {
     },
     {
       label: "Difficulties",
-      value: DIFFICULTIES.length.toString(),
+      value: difficulties.length.toString(),
       icon: (
         <svg
           className="h-6 w-6"
@@ -67,7 +69,7 @@ export function HomePage() {
     },
   ];
 
-  const featuredTopics = TOPICS.slice(0, 6);
+  const featuredTopics = topics.slice(0, 6);
 
   return (
     <div className="space-y-12">
@@ -173,7 +175,7 @@ export function HomePage() {
           Filter by Difficulty
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {DIFFICULTIES.map((difficulty) => (
+          {difficulties.map((difficulty) => (
             <Link
               key={difficulty}
               to={`/questions?difficulty=${difficulty}`}

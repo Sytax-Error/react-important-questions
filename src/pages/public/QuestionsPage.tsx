@@ -4,7 +4,8 @@ import { Badge, DifficultyBadge, TopicBadge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { PageLoader } from "../../components/ui/LoadingSpinner";
-import { InterviewQuestion, TOPICS, DIFFICULTIES } from "../../types/question";
+import { InterviewQuestion } from "../../types/question";
+import { subscribeToPublishedQuestions } from "../../features/questions/services/questionService";
 
 export function QuestionsPage() {
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
@@ -16,15 +17,35 @@ export function QuestionsPage() {
     tags: [] as string[],
   });
   const [allTags, setAllTags] = useState<string[]>([]);
+  const [topics, setTopics] = useState<string[]>([]);
+  const [difficulties, setDifficulties] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
-    // TODO: Fetch published questions from Firestore
-    setTimeout(() => {
-      setQuestions([]);
-      setAllTags([]);
-      setLoading(false);
-    }, 500);
+    const unsubscribe = subscribeToPublishedQuestions(
+      (fetchedQuestions) => {
+        setQuestions(fetchedQuestions);
+        // Extract all unique tags from questions
+        const tags = new Set<string>();
+        const topicSet = new Set<string>();
+        const difficultySet = new Set<string>();
+        fetchedQuestions.forEach((q) => {
+          q.tags.forEach((tag) => tags.add(tag));
+          if (q.topic) topicSet.add(q.topic);
+          if (q.difficulty) difficultySet.add(q.difficulty);
+        });
+        setAllTags(Array.from(tags).sort());
+        setTopics(Array.from(topicSet).sort());
+        setDifficulties(Array.from(difficultySet).sort());
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching questions:", error);
+        setLoading(false);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   const handleFilterChange = (key: string, value: string | string[]) => {
@@ -119,7 +140,7 @@ export function QuestionsPage() {
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">All Topics</option>
-                  {TOPICS.map((topic) => (
+                  {topics.map((topic) => (
                     <option key={topic} value={topic}>
                       {topic}
                     </option>
@@ -143,7 +164,7 @@ export function QuestionsPage() {
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">All Difficulties</option>
-                  {DIFFICULTIES.map((difficulty) => (
+                  {difficulties.map((difficulty) => (
                     <option key={difficulty} value={difficulty}>
                       {difficulty}
                     </option>
