@@ -2,11 +2,18 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/Card";
 import { TopicBadge, DifficultyBadge } from "../../components/ui/Badge";
 import { usePublicQuestionMeta } from "../../features/questions/hooks/usePublicQuestionMeta";
+import { useHomePageQuestions } from "../../features/questions/hooks/useHomePageQuestions";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 
 export function HomePage() {
   const { totalQuestions, topics, difficulties, loading } =
     usePublicQuestionMeta();
+  const {
+    recentlyAdded,
+    featured,
+    loading: questionsLoading,
+    error,
+  } = useHomePageQuestions();
 
   const stats = [
     {
@@ -313,6 +320,168 @@ export function HomePage() {
             </Link>
           ))}
         </div>
+      </section>
+
+      {/* Recently Added Questions */}
+      <section aria-labelledby="recently-added-heading" className="pt-4">
+        <div className="flex items-center justify-between mb-8">
+          <h2
+            id="recently-added-heading"
+            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+          >
+            Recently Added
+          </h2>
+          <Link
+            to="/questions"
+            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          >
+            View all →
+          </Link>
+        </div>
+        {questionsLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+              </Card>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-600 dark:text-red-400 mb-4">
+              Failed to load recently added questions
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+          </div>
+        ) : recentlyAdded.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              No recently added questions yet
+            </p>
+            <Link
+              to="/questions"
+              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            >
+              Browse all questions →
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentlyAdded.map((question) => (
+              <Link
+                key={question.id}
+                to={`/questions/${question.slug}`}
+                className="group"
+              >
+                <Card hover className="h-full">
+                  <CardContent className="py-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TopicBadge topic={question.topic} />
+                      <DifficultyBadge difficulty={question.difficulty} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                      {question.question}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                      {question.shortAnswer}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {question.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {question.tags.length > 3 && (
+                        <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded">
+                          +{question.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Featured Questions */}
+      <section aria-labelledby="featured-heading" className="pt-4">
+        <div className="flex items-center justify-between mb-8">
+          <h2
+            id="featured-heading"
+            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+          >
+            Featured Questions
+          </h2>
+          <Link
+            to="/questions"
+            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          >
+            View all →
+          </Link>
+        </div>
+        {questionsLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+              </Card>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-600 dark:text-red-400 mb-4">
+              Failed to load featured questions
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+          </div>
+        ) : featured.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              No featured questions yet
+            </p>
+            <Link
+              to="/questions"
+              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            >
+              Browse all questions →
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((question) => (
+              <Link
+                key={question.id}
+                to={`/questions/${question.slug}`}
+                className="group"
+              >
+                <Card hover className="h-full">
+                  <CardContent className="py-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded">
+                        Featured
+                      </span>
+                      <TopicBadge topic={question.topic} />
+                      <DifficultyBadge difficulty={question.difficulty} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                      {question.question}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                      {question.shortAnswer}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Features */}

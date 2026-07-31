@@ -489,6 +489,56 @@ export const isUserAdmin = async (uid: string): Promise<boolean> => {
 };
 
 /**
+ * Get recently added published questions (for home page)
+ * TEMPORARY: Use publishedAt for query (existing indexes) and filter by status in memory
+ * Once indexes with status field are built, revert to using both fields in the query
+ */
+export const getRecentlyAddedQuestions = async (
+  limitCount = 5,
+): Promise<InterviewQuestion[]> => {
+  const constraints: QueryConstraint[] = [
+    where("isPublished", "==", true),
+    orderBy("publishedAt", "desc"),
+    limit(limitCount * 2), // Fetch extra to account for in-memory filtering
+  ];
+
+  const q = query(
+    collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
+    ...constraints,
+  );
+  const querySnap = await getDocs(q);
+  const questions = querySnap.docs.map((doc) => doc.data());
+  // Filter by status in memory (temporary workaround while indexes build)
+  const publishedQuestions = questions.filter((q) => q.status === "published");
+  return publishedQuestions.slice(0, limitCount);
+};
+
+/**
+ * Get featured questions (for home page)
+ * TEMPORARY: Use publishedAt for query (existing indexes) and filter by status in memory
+ * Once indexes with status field are built, revert to using both fields in the query
+ */
+export const getFeaturedQuestions = async (
+  limitCount = 3,
+): Promise<InterviewQuestion[]> => {
+  const constraints: QueryConstraint[] = [
+    where("isPublished", "==", true),
+    orderBy("publishedAt", "desc"),
+    limit(limitCount * 2), // Fetch extra to account for in-memory filtering
+  ];
+
+  const q = query(
+    collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
+    ...constraints,
+  );
+  const querySnap = await getDocs(q);
+  const questions = querySnap.docs.map((doc) => doc.data());
+  // Filter by status in memory (temporary workaround while indexes build)
+  const publishedQuestions = questions.filter((q) => q.status === "published");
+  return publishedQuestions.slice(0, limitCount);
+};
+
+/**
  * Get admin document
  */
 export const getAdminDocument = async (

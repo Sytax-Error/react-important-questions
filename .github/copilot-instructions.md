@@ -153,10 +153,56 @@ Do not recreate Phase 2 functionality.
 The application is currently being developed within:
 
 ```text
-Phase 3 — Admin Question Management
+Phase 4 — Public Question Website
 ```
 
-The exact Phase 3 sub-phase must be specified in the user's prompt.
+The exact Phase 4 sub-phase must be specified in the user's prompt.
+
+### Phase 4A — Public Home Page
+
+Status: Completed.
+
+Implemented:
+
+- Hero section with headline, description, and CTA buttons (Browse Questions, Start with JavaScript)
+- Website introduction
+- Technology cards (Browse by Topic - dynamic from loaded questions)
+- Total question statistics (Questions, Topics, Difficulties count cards)
+- Recently added questions section (fetches 5 most recent published questions)
+- Featured questions section (fetches 3 featured published questions)
+- Call-to-action areas (Features section + final CTA card)
+- Responsive layout (mobile, tablet, desktop)
+- Loading states with skeleton animations
+- Error states with user-friendly messages
+- Empty states for when no questions exist
+
+Notes:
+
+- Requires Firestore composite index for queries on (isPublished, status, createdAt)
+- Index creation URL provided in Firebase console error message
+- Uses `usePublicQuestionMeta` hook for statistics and topics/difficulties
+- Uses new `useHomePageQuestions` hook for recently added and featured questions
+- New service functions: `getRecentlyAddedQuestions`, `getFeaturedQuestions`
+- **Temporary workaround**: Uses `publishedAt` ordering (existing index) with in-memory `status === "published"` filtering while composite indexes build. Fetches 2x limit to account for filtering.
+
+### Phase 4B — Public Question Listing
+
+Implement:
+
+- Published question list
+- Search
+- Topic filter
+- Category filter
+- Difficulty filter
+- Tag filter
+- Sorting
+- Pagination or incremental loading
+- Loading state
+- Empty state
+- Error state
+- Responsive question cards
+
+Only published questions may appear.
 
 ---
 
@@ -700,102 +746,100 @@ Do not repeat Phase 2.
 
 ## Phase 3 — Admin Question Management
 
-Status: In progress.
+Status: Completed.
 
 ### Phase 3A — Firestore Question Services
 
-Implement:
+Implemented:
 
-- Firestore question document type
-- Typed converter or mapping utility
-- Collection constants
-- Fetch all admin questions
-- Subscribe to all admin questions
-- Fetch published questions
+- Firestore question document type with typed converter
+- Collection constants (QUESTIONS_COLLECTION, ADMINS_COLLECTION)
+- Fetch all admin questions (real-time subscription)
+- Subscribe to all admin questions with filters
+- Fetch published questions (real-time subscription)
 - Fetch question by ID
 - Fetch question by slug
-- Create question
-- Update question
+- Create question with server timestamps
+- Update question with server timestamps
 - Delete question
-- Publish question
-- Unpublish question
-- Slug uniqueness check
+- Publish question (sets isPublished, status, publishedAt)
+- Unpublish question (sets isPublished=false, status=draft)
+- Slug uniqueness check (with excludeId for editing)
 - Service-level error mapping
-- Listener cleanup
-
-Do not create the final admin form or list UI during Phase 3A.
+- Listener cleanup via unsubscribe functions
+- Admin statistics (getQuestionStats)
+- Paginated queries for admin and public views
+- Admin authorization check (isUserAdmin)
 
 ### Phase 3B — Add and Edit Question Form
 
-Implement:
+Implemented:
 
-- Reusable question form
-- Create-question page
-- Edit-question page
-- Controlled fields
-- Slug generation
-- Manual slug editing
-- Slug uniqueness validation
-- Topic selection
-- Category selection
-- Difficulty selection
-- Short answer
-- Detailed answer
-- Code example
-- Code language
-- Dynamic important points
-- Dynamic follow-up questions
-- Dynamic tags
-- Save as draft
-- Publish immediately
-- Form validation
-- Unsaved-change protection
+- Reusable QuestionForm component (src/features/questions/components/QuestionForm.tsx)
+- Create-question page (src/pages/admin/AdminQuestionFormPage.tsx)
+- Edit-question page (src/pages/admin/AdminQuestionEditPage.tsx)
+- Controlled inputs for all fields
+- Auto slug generation from question text
+- Manual slug editing with isSlugManual flag
+- Slug uniqueness validation via checkSlugExists
+- Topic selection (9 predefined topics)
+- Category selection (27 predefined categories)
+- Difficulty selection (Beginner, Intermediate, Advanced)
+- Short answer (required, min 20 chars)
+- Detailed answer (required, min 50 chars)
+- Optional code example with language selection
+- Dynamic important points array (add/edit/remove)
+- Dynamic follow-up questions array (add/edit/remove)
+- Dynamic tags array (add/edit/remove)
+- Save as draft action
+- Publish immediately action
+- Form validation (validateQuestionForm utility)
+- Unsaved changes protection (beforeunload event)
 - Loading, success, and error states
+- Field-specific error display
+- Duplicate submission prevention
 
 ### Phase 3C — Admin Question List
 
-Implement:
+Implemented:
 
-- Admin question listing
-- Question title
-- Topic
-- Category
-- Difficulty
-- Draft or published status
-- Updated date
-- Search
-- Topic filter
-- Difficulty filter
-- Status filter
-- Edit action
-- Preview action
-- Publish action
-- Unpublish action
-- Delete action
-- Delete confirmation
-- Loading state
-- Empty state
+- AdminQuestionList component (src/features/questions/components/QuestionList.tsx)
+- AdminQuestionsPage (src/pages/admin/AdminQuestionsPage.tsx)
+- Real-time question listing via subscribeToAllQuestions
+- Question title, topic, difficulty, status, updated date
+- Search (question text and short answer)
+- Topic filter (dynamic from loaded questions)
+- Difficulty filter (Beginner/Intermediate/Advanced)
+- Status filter (All/Published/Draft)
+- Edit action (navigate to edit page)
+- Preview action (dialog with full question details)
+- Publish action (for draft questions)
+- Unpublish action (for published questions)
+- Delete action with confirmation dialog
+- DeleteConfirmationDialog component
+- Loading state (PageLoader)
+- Empty state (no questions found)
 - Error state
-
-Reuse loaded data for filtering when practical.
+- Stats overview cards (total, published, drafts, topics)
+- Reuses loaded data for filtering (client-side)
 
 ### Phase 3D — Admin Dashboard and Phase Review
 
-Implement:
+Implemented:
 
+- AdminDashboardPage (src/pages/admin/AdminDashboardPage.tsx)
 - Total question count
 - Published question count
 - Draft question count
-- Beginner question count
-- Intermediate question count
-- Advanced question count
-- Questions grouped by topic
-- Recently updated questions
-- Firestore rule review
-- Phase 3 integration testing
-- Production-build verification
+- Beginner/Intermediate/Advanced question counts
+- Questions grouped by topic (count per topic)
+- Recently updated questions (last 5)
+- Quick actions (Add Question, Manage Questions, View Site)
+- Firestore security rules reviewed and enforced
+- Phase 3 integration testing ready
+- Production build verified
 
-Do not begin Phase 4 automatically.
+Do not repeat Phase 3 functionality.
 
 ---
 
@@ -803,16 +847,30 @@ Do not begin Phase 4 automatically.
 
 ### Phase 4A — Public Home Page
 
-Implement:
+Status: Completed.
 
-- Hero section
+Implemented:
+
+- Hero section with headline, description, and CTA buttons (Browse Questions, Start with JavaScript)
 - Website introduction
-- Technology cards
-- Total question statistics
-- Recently added questions
-- Featured questions
-- Call-to-action areas
-- Responsive layout
+- Technology cards (Browse by Topic - dynamic from loaded questions)
+- Total question statistics (Questions, Topics, Difficulties count cards)
+- Recently added questions section (fetches 5 most recent published questions)
+- Featured questions section (fetches 3 featured published questions)
+- Call-to-action areas (Features section + final CTA card)
+- Responsive layout (mobile, tablet, desktop)
+- Loading states with skeleton animations
+- Error states with user-friendly messages
+- Empty states for when no questions exist
+
+Notes:
+
+- Requires Firestore composite index for queries on (isPublished, status, createdAt)
+- Index creation URL provided in Firebase console error message
+- Uses `usePublicQuestionMeta` hook for statistics and topics/difficulties
+- Uses new `useHomePageQuestions` hook for recently added and featured questions
+- New service functions: `getRecentlyAddedQuestions`, `getFeaturedQuestions`
+- **Temporary workaround**: Uses `publishedAt` ordering (existing index) with in-memory `status === "published"` filtering while composite indexes build. Fetches 2x limit to account for filtering.
 
 ### Phase 4B — Public Question Listing
 

@@ -78,9 +78,15 @@ export function StatusBadge({ status }: { status: "draft" | "published" }) {
   );
 }
 
-export function TopicBadge({ topic }: { topic: string }) {
+export function TopicBadge({
+  topic,
+  className = "",
+}: {
+  topic: string;
+  className?: string;
+}) {
   return (
-    <Badge variant="info" size="sm">
+    <Badge variant="info" size="sm" className={className}>
       {topic}
     </Badge>
   );
