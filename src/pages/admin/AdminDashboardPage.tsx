@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Badge, StatusBadge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { PageLoader } from "@/components/ui/LoadingSpinner";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/Card";
-import { Badge, StatusBadge } from "../../components/ui/Badge";
-import { Button } from "../../components/ui/Button";
-import { PageLoader } from "../../components/ui/LoadingSpinner";
-import {
-  getAdminStats,
-  getAllQuestionsForAdmin,
-} from "../../services/firebase/firestore";
-import { InterviewQuestion, Difficulty } from "../../types/questions";
+  getQuestionStats,
+  getPaginatedQuestionsAdmin,
+} from "@/features/questions/services/questionService";
+import { InterviewQuestion, Difficulty } from "@/types/questions";
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<{
@@ -22,6 +17,7 @@ export function AdminDashboardPage() {
     draftQuestions: number;
     questionsByDifficulty: Record<Difficulty, number>;
     questionsByTopic: Record<string, number>;
+    recentlyUpdated: InterviewQuestion[];
   } | null>(null);
   const [recentQuestions, setRecentQuestions] = useState<InterviewQuestion[]>(
     [],
@@ -34,8 +30,8 @@ export function AdminDashboardPage() {
       try {
         setLoading(true);
         const [statsData, questionsData] = await Promise.all([
-          getAdminStats(),
-          getAllQuestionsForAdmin(5),
+          getQuestionStats(),
+          getPaginatedQuestionsAdmin(5),
         ]);
         setStats(statsData);
         setRecentQuestions(questionsData.questions);

@@ -1,6 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../services/firebase/config";
-import { ADMINS_COLLECTION } from "../../../services/firebase/firestore";
+import { db } from "@/services/firebase/config";
+import { ADMINS_COLLECTION } from "@/features/questions/services/questionService";
 
 export interface AdminDocument {
   email: string;

@@ -1,12 +1,8 @@
 import { useEffect, useState, ReactNode } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../../services/firebase/config";
-import { isUserAdmin } from "../../../services/firebase/firestore";
-import {
-  AuthUser,
-  LoginCredentials,
-  mapFirebaseUser,
-} from "../../../types/auth";
+import { auth } from "@/services/firebase/config";
+import { isUserAdmin } from "@/features/questions/services/questionService";
+import { AuthUser, LoginCredentials, mapFirebaseUser } from "@/types/auth";
 import { AuthContext } from "./AuthContextType";
 
 export function AuthProvider({ children }: { children: ReactNode }) {

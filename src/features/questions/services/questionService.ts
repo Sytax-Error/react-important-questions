@@ -28,6 +28,7 @@ import {
 } from "@/types/questions";
 
 export const QUESTIONS_COLLECTION = "questions";
+export const ADMINS_COLLECTION = "admins";
 
 /**
  * Converter for InterviewQuestion to/from Firestore
@@ -478,3 +479,53 @@ export const getQuestionStats = async (): Promise<{
     recentlyUpdated,
   };
 };
+
+/**
+ * Check if a user is an admin
+ */
+export const isUserAdmin = async (uid: string): Promise<boolean> => {
+  const adminDoc = await getDoc(doc(db, ADMINS_COLLECTION, uid));
+  return adminDoc.exists() && adminDoc.data().role === "admin";
+};
+
+/**
+ * Get admin document
+ */
+export const getAdminDocument = async (
+  uid: string,
+): Promise<{
+  email: string;
+  role: string;
+  createdAt: Date;
+} | null> => {
+  try {
+    const adminDoc = await getDoc(doc(db, ADMINS_COLLECTION, uid));
+    if (!adminDoc.exists()) return null;
+    const data = adminDoc.data();
+    return {
+      email: data.email,
+      role: data.role,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    };
+  } catch (error) {
+    console.error("Error fetching admin document:", error);
+    return null;
+  }
+};
+
+/**
+ * Create admin document data
+ */
+export const createAdminDocumentData = (
+  email: string,
+): {
+  email: string;
+  role: string;
+} => {
+  return {
+    email,
+    role: "admin",
+  };
+};
+
+export { db, serverTimestamp, Timestamp };
