@@ -4,6 +4,7 @@ import { Card, CardContent } from "../../components/ui/Card";
 import { DifficultyBadge, TopicBadge, Badge } from "../../components/ui/Badge";
 import { PageLoader } from "../../components/ui/LoadingSpinner";
 import { InterviewQuestion } from "../../types/questions";
+import { subscribeToPublishedQuestions } from "../../features/questions/services/questionService";
 
 export function TopicPage() {
   const { topic } = useParams<{ topic: string }>();
@@ -14,11 +15,21 @@ export function TopicPage() {
   useEffect(() => {
     if (!decodedTopic) return;
     setLoading(true);
-    // TODO: Fetch questions by topic from Firestore
-    setTimeout(() => {
-      setQuestions([]);
-      setLoading(false);
-    }, 500);
+    
+    const unsubscribe = subscribeToPublishedQuestions(
+      (fetchedQuestions) => {
+        setQuestions(fetchedQuestions);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching questions by topic:", error);
+        setQuestions([]);
+        setLoading(false);
+      },
+      { topic: decodedTopic }
+    );
+
+    return () => unsubscribe();
   }, [decodedTopic]);
 
   if (loading) {
