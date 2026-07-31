@@ -135,10 +135,12 @@ export const subscribeToPublishedQuestions = (
   filters?: QuestionFilters,
   pageSize = 10,
 ): Unsubscribe => {
+  // TEMPORARY: Use only isPublished for query (existing indexes) and filter by status in memory
+  // Once indexes with status field are built, revert to using both fields in the query
   const constraints: QueryConstraint[] = [
     where("isPublished", "==", true),
     orderBy("publishedAt", "desc"),
-    limit(pageSize),
+    limit(pageSize * 2), // Fetch extra to account for in-memory filtering
   ];
 
   if (filters?.topic) {
@@ -159,7 +161,12 @@ export const subscribeToPublishedQuestions = (
     q,
     (snapshot) => {
       const questions = snapshot.docs.map((doc) => doc.data());
-      onNext(questions);
+      // Filter by status in memory (temporary workaround while indexes build)
+      const publishedQuestions = questions.filter(
+        (q) => q.status === "published",
+      );
+      // Apply limit after filtering
+      onNext(publishedQuestions.slice(0, pageSize));
     },
     onError,
   );
@@ -226,15 +233,18 @@ export const getQuestionById = async (
 export const getQuestionBySlug = async (
   slug: string,
 ): Promise<InterviewQuestion | null> => {
+  // TEMPORARY: Use only isPublished for query (existing indexes) and filter by status in memory
   const q = query(
     collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
     where("slug", "==", slug),
     where("isPublished", "==", true),
-    where("status", "==", "published"),
     limit(1),
   );
   const querySnap = await getDocs(q);
-  return querySnap.empty ? null : querySnap.docs[0].data();
+  if (querySnap.empty) return null;
+  const question = querySnap.docs[0].data();
+  // Filter by status in memory (temporary workaround while indexes build)
+  return question.status === "published" ? question : null;
 };
 
 /**

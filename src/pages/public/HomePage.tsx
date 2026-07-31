@@ -76,7 +76,7 @@ export function HomePage() {
       {/* Hero Section */}
       <section className="text-center py-16 sm:py-24">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-          Interview Questions for{" "}
+          Questions for{" "}
           <span className="text-primary-600 dark:text-primary-400">
             Frontend Developers
           </span>
