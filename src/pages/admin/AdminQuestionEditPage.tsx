@@ -22,6 +22,7 @@ import {
   QuestionFormData,
   TOPICS,
   DIFFICULTIES,
+  CATEGORIES,
 } from "../../types/questions";
 import { useAuth } from "../../features/auth/AuthProvider";
 import { generateSlug, validateSlug } from "../../utils/slug";
@@ -290,46 +291,96 @@ export function AdminQuestionEditPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input
-                label="Topic *"
-                value={formData.topic}
-                onChange={(e) => handleChange("topic", e.target.value)}
-                error={errors.topic}
-                list="topics"
-              />
-              <datalist id="topics">
-                {TOPICS.map((topic) => (
-                  <option key={topic} value={topic} />
-                ))}
-              </datalist>
+              <div>
+                <label
+                  htmlFor="topic"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Topic *
+                </label>
+                <select
+                  id="topic"
+                  value={formData.topic}
+                  onChange={(e) => handleChange("topic", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-gray-100 bg-white"
+                  required
+                >
+                  <option value="">Select a topic</option>
+                  {TOPICS.map((topic) => (
+                    <option key={topic} value={topic}>
+                      {topic}
+                    </option>
+                  ))}
+                </select>
+                {errors.topic && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {errors.topic}
+                  </p>
+                )}
+              </div>
 
-              <Input
-                label="Category *"
-                value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                error={errors.category}
-                placeholder="e.g., React Hooks, CSS Layout, etc."
-              />
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Category *
+                </label>
+                <select
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => handleChange("category", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-gray-100 bg-white"
+                  required
+                >
+                  <option value="">Select a category</option>
+                  {CATEGORIES.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                {errors.category && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {errors.category}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input
-                label="Difficulty *"
-                value={formData.difficulty}
-                onChange={(e) =>
-                  handleChange(
-                    "difficulty",
-                    e.target.value as "Beginner" | "Intermediate" | "Advanced",
-                  )
-                }
-                error={errors.difficulty}
-                list="difficulties"
-              />
-              <datalist id="difficulties">
-                {DIFFICULTIES.map((d) => (
-                  <option key={d} value={d} />
-                ))}
-              </datalist>
+              <div>
+                <label
+                  htmlFor="difficulty"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Difficulty *
+                </label>
+                <select
+                  id="difficulty"
+                  value={formData.difficulty}
+                  onChange={(e) =>
+                    handleChange(
+                      "difficulty",
+                      e.target.value as "Beginner" | "Intermediate" | "Advanced",
+                    )
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-gray-100 bg-white"
+                  required
+                >
+                  <option value="">Select difficulty</option>
+                  {DIFFICULTIES.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+                {errors.difficulty && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {errors.difficulty}
+                  </p>
+                )}
+              </div>
 
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">

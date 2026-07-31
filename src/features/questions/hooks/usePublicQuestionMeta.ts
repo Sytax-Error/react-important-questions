@@ -6,6 +6,7 @@ export interface PublicQuestionMeta {
   totalQuestions: number;
   topics: string[];
   difficulties: Difficulty[];
+  loading: boolean;
 }
 
 export function usePublicQuestionMeta(): PublicQuestionMeta {
@@ -13,6 +14,7 @@ export function usePublicQuestionMeta(): PublicQuestionMeta {
     totalQuestions: 0,
     topics: [],
     difficulties: [],
+    loading: true,
   });
 
   useEffect(() => {
@@ -33,11 +35,17 @@ export function usePublicQuestionMeta(): PublicQuestionMeta {
             totalQuestions: questions.length,
             topics: Array.from(topicSet).sort(),
             difficulties: Array.from(difficultySet).sort(),
+            loading: false,
           });
         },
         (error) => {
           console.error("Failed to load public question metadata:", error);
-          setMeta({ totalQuestions: 0, topics: [], difficulties: [] });
+          setMeta({
+            totalQuestions: 0,
+            topics: [],
+            difficulties: [],
+            loading: false,
+          });
         },
       );
     };

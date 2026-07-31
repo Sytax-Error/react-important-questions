@@ -13,13 +13,14 @@ import {
   getAdminStats,
   getAllQuestionsForAdmin,
 } from "../../services/firebase/firestore";
-import { InterviewQuestion } from "../../types/questions";
+import { InterviewQuestion, Difficulty } from "../../types/questions";
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<{
     totalQuestions: number;
     publishedQuestions: number;
     draftQuestions: number;
+    questionsByDifficulty: Record<Difficulty, number>;
     questionsByTopic: Record<string, number>;
   } | null>(null);
   const [recentQuestions, setRecentQuestions] = useState<InterviewQuestion[]>(
@@ -198,6 +199,97 @@ export function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Difficulty Breakdown */}
+      {stats && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Questions by Difficulty</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Beginner
+                  </p>
+                  <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
+                    {stats.questionsByDifficulty.Beginner || 0}
+                  </p>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Intermediate
+                  </p>
+                  <p className="mt-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                    {stats.questionsByDifficulty.Intermediate || 0}
+                  </p>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Advanced
+                  </p>
+                  <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
+                    {stats.questionsByDifficulty.Advanced || 0}
+                  </p>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <Card>

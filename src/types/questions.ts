@@ -70,4 +70,45 @@ export type Topic = (typeof TOPICS)[number];
 
 export const DIFFICULTIES: Difficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
 
+export const CATEGORIES = [
+  'React Hooks',
+  'React Components',
+  'React State Management',
+  'React Performance',
+  'React Router',
+  'CSS Layout',
+  'CSS Flexbox',
+  'CSS Grid',
+  'CSS Animations',
+  'CSS Responsive Design',
+  'JavaScript ES6+',
+  'JavaScript Async',
+  'JavaScript DOM',
+  'JavaScript Events',
+  'TypeScript Basics',
+  'TypeScript Advanced',
+  'TypeScript Generics',
+  'TypeScript Utility Types',
+  'HTML Semantic',
+  'HTML Forms',
+  'HTML Accessibility',
+  'React Native Components',
+  'React Native Navigation',
+  'React Native Performance',
+  'Next.js App Router',
+  'Next.js Server Components',
+  'Next.js Data Fetching',
+  'Next.js Performance',
+  'Node.js Basics',
+  'Node.js Express',
+  'Node.js Async',
+  'Node.js Streams',
+  'Express.js Routing',
+  'Express.js Middleware',
+  'Express.js Validation',
+  'Express.js Security',
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
 export const QUESTION_STATUS: PublicationStatus[] = ['draft', 'published'];

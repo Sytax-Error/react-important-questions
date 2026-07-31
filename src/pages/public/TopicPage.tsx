@@ -15,7 +15,7 @@ export function TopicPage() {
   useEffect(() => {
     if (!decodedTopic) return;
     setLoading(true);
-    
+
     const unsubscribe = subscribeToPublishedQuestions(
       (fetchedQuestions) => {
         setQuestions(fetchedQuestions);
@@ -26,7 +26,7 @@ export function TopicPage() {
         setQuestions([]);
         setLoading(false);
       },
-      { topic: decodedTopic }
+      { topic: decodedTopic },
     );
 
     return () => unsubscribe();

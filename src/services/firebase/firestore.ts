@@ -263,6 +263,7 @@ export const getAdminStats = async (): Promise<{
   totalQuestions: number;
   publishedQuestions: number;
   draftQuestions: number;
+  questionsByDifficulty: Record<Difficulty, number>;
   questionsByTopic: Record<string, number>;
 }> => {
   const allQuestionsSnap = await getDocs(query(questionsCollection));
@@ -271,6 +272,16 @@ export const getAdminStats = async (): Promise<{
   const totalQuestions = questions.length;
   const publishedQuestions = questions.filter((q) => q.isPublished).length;
   const draftQuestions = totalQuestions - publishedQuestions;
+
+  const questionsByDifficulty: Record<Difficulty, number> = {
+    Beginner: 0,
+    Intermediate: 0,
+    Advanced: 0,
+  };
+  questions.forEach((q) => {
+    questionsByDifficulty[q.difficulty] =
+      (questionsByDifficulty[q.difficulty] || 0) + 1;
+  });
 
   const questionsByTopic: Record<string, number> = {};
   questions.forEach((q) => {
@@ -281,6 +292,7 @@ export const getAdminStats = async (): Promise<{
     totalQuestions,
     publishedQuestions,
     draftQuestions,
+    questionsByDifficulty,
     questionsByTopic,
   };
 };

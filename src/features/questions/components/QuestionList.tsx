@@ -10,6 +10,12 @@ import { Input } from "@/components/ui/Input";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   subscribeToAllQuestions,
   deleteQuestion,
   publishQuestion,
@@ -47,6 +53,10 @@ export function AdminQuestionList() {
     questionId: string | null;
     questionTitle: string | null;
   }>({ open: false, questionId: null, questionTitle: null });
+  const [previewDialog, setPreviewDialog] = useState<{
+    open: boolean;
+    question: InterviewQuestion | null;
+  }>({ open: false, question: null });
   const { user } = useAuth();
 
   // Subscribe to real-time question updates
@@ -135,6 +145,10 @@ export function AdminQuestionList() {
       setError("Failed to unpublish question");
       console.error(err);
     }
+  };
+
+  const handlePreview = (question: InterviewQuestion) => {
+    setPreviewDialog({ open: true, question });
   };
 
   if (loading) {
@@ -406,6 +420,12 @@ export function AdminQuestionList() {
                               >
                                 Edit
                               </a>
+                              <button
+                                onClick={() => handlePreview(question)}
+                                className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                Preview
+                              </button>
                               {question.isPublished ? (
                                 <button
                                   onClick={() => handleUnpublish(question)}
@@ -452,6 +472,108 @@ export function AdminQuestionList() {
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
         onConfirm={handleDeleteConfirmYes}
       />
+      <Dialog
+        open={previewDialog.open}
+        onOpenChange={(open) => setPreviewDialog((prev) => ({ ...prev, open }))}
+      >
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Preview: {previewDialog.question?.question}
+            </DialogTitle>
+          </DialogHeader>
+          {previewDialog.question && (
+            <div className="space-y-6 py-4">
+              <div className="flex items-center gap-2">
+                <TopicBadge topic={previewDialog.question.topic} />
+                <DifficultyBadge
+                  difficulty={previewDialog.question.difficulty}
+                />
+                <StatusBadge
+                  status={
+                    previewDialog.question.isPublished ? "published" : "draft"
+                  }
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Short Answer
+                </h4>
+                <p className="mt-1 text-gray-900 dark:text-gray-100">
+                  {previewDialog.question.shortAnswer}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Detailed Answer
+                </h4>
+                <div className="mt-1 prose dark:prose-invert max-w-none">
+                  {previewDialog.question.detailedAnswer
+                    .split("\n")
+                    .map((paragraph, i) => (
+                      <p key={i}>{paragraph}</p>
+                    ))}
+                </div>
+              </div>
+              {previewDialog.question.code && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Code Example
+                  </h4>
+                  <pre className="mt-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-4 overflow-x-auto">
+                    <code
+                      className={`language-${previewDialog.question.language || "text"}`}
+                    >
+                      {previewDialog.question.code}
+                    </code>
+                  </pre>
+                </div>
+              )}
+              {previewDialog.question.importantPoints.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Important Points
+                  </h4>
+                  <ul className="mt-1 list-disc list-inside space-y-1 text-gray-900 dark:text-gray-100">
+                    {previewDialog.question.importantPoints.map((point, i) => (
+                      <li key={i}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {previewDialog.question.followUpQuestions.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Follow-up Questions
+                  </h4>
+                  <ul className="mt-1 list-disc list-inside space-y-1 text-gray-900 dark:text-gray-100">
+                    {previewDialog.question.followUpQuestions.map((q, i) => (
+                      <li key={i}>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {previewDialog.question.tags.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Tags
+                  </h4>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {previewDialog.question.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center rounded-full bg-primary-100 dark:bg-primary-900/30 px-2.5 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
