@@ -399,7 +399,7 @@ export const getPaginatedPublishedQuestions = async (
   const constraints: QueryConstraint[] = [
     where("isPublished", "==", true),
     where("status", "==", "published"),
-    orderBy("createdAt", "desc"),
+    orderBy("publishedAt", "desc"),
     limit(pageSize + 1),
   ];
 
@@ -409,9 +409,7 @@ export const getPaginatedPublishedQuestions = async (
   if (filters.difficulty) {
     constraints.push(where("difficulty", "==", filters.difficulty));
   }
-  if (filters.tags && filters.tags.length > 0) {
-    constraints.push(where("tags", "array-contains-any", filters.tags));
-  }
+  // Tags filtering done in memory (array-contains-any cannot be combined with other filters)
   if (lastDoc) {
     constraints.push(startAfter(lastDoc));
   }
@@ -421,7 +419,15 @@ export const getPaginatedPublishedQuestions = async (
     ...constraints,
   );
   const querySnap = await getDocs(q);
-  const questions = querySnap.docs.map((doc) => doc.data());
+  let questions = querySnap.docs.map((doc) => doc.data());
+
+  // Filter by tags in memory (cannot combine array-contains-any with other where clauses)
+  if (filters.tags && filters.tags.length > 0) {
+    questions = questions.filter((q) =>
+      filters.tags!.some((tag) => q.tags.includes(tag)),
+    );
+  }
+
   const hasMore = questions.length > pageSize;
   const results = hasMore ? questions.slice(0, pageSize) : questions;
   const newLastDoc = querySnap.docs[pageSize - 1];

@@ -187,22 +187,32 @@ Notes:
 
 ### Phase 4B — Public Question Listing
 
-Implement:
+Status: Completed.
 
-- Published question list
-- Search
-- Topic filter
-- Category filter
-- Difficulty filter
-- Tag filter
-- Sorting
-- Pagination or incremental loading
-- Loading state
-- Empty state
-- Error state
-- Responsive question cards
+Implemented:
 
-Only published questions may appear.
+- Published question list with server-side pagination
+- Search with debounced input (300ms)
+- Topic filter (9 predefined topics)
+- Category filter (dynamic from loaded questions)
+- Difficulty filter (Beginner, Intermediate, Advanced)
+- Tag filter (dynamic from loaded questions, clickable badges)
+- Sorting (Newest, Oldest, Difficulty asc/desc, Alphabetical, Group by Topic)
+- Incremental loading with "Load More" button
+- Loading state with skeleton animations
+- Empty state with helpful message and clear filters action
+- Error state with retry button
+- Responsive question cards (1/2/3 columns)
+- Clear Filters button (enabled when filters active)
+- Uses `getPaginatedPublishedQuestions` service with proper server-side queries
+- Tags filtered in memory (Firestore limitation: array-contains-any cannot combine with other where clauses)
+
+Notes:
+
+- Firestore composite indexes created for (isPublished, status, publishedAt, topic/difficulty)
+- Uses new `usePaginatedQuestions` hook for pagination and filter management
+- Uses new `useQuestionSorting` hook for client-side sorting
+- New UI component: `Select` for consistent dropdown styling
 
 ---
 
