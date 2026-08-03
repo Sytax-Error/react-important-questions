@@ -136,12 +136,11 @@ export const subscribeToPublishedQuestions = (
   filters?: QuestionFilters,
   pageSize = 10,
 ): Unsubscribe => {
-  // TEMPORARY: Use only isPublished for query (existing indexes) and filter by status in memory
-  // Once indexes with status field are built, revert to using both fields in the query
   const constraints: QueryConstraint[] = [
     where("isPublished", "==", true),
+    where("status", "==", "published"),
     orderBy("publishedAt", "desc"),
-    limit(pageSize * 2), // Fetch extra to account for in-memory filtering
+    limit(pageSize),
   ];
 
   if (filters?.topic) {
@@ -162,12 +161,7 @@ export const subscribeToPublishedQuestions = (
     q,
     (snapshot) => {
       const questions = snapshot.docs.map((doc) => doc.data());
-      // Filter by status in memory (temporary workaround while indexes build)
-      const publishedQuestions = questions.filter(
-        (q) => q.status === "published",
-      );
-      // Apply limit after filtering
-      onNext(publishedQuestions.slice(0, pageSize));
+      onNext(questions);
     },
     onError,
   );
@@ -496,16 +490,15 @@ export const isUserAdmin = async (uid: string): Promise<boolean> => {
 
 /**
  * Get recently added published questions (for home page)
- * TEMPORARY: Use publishedAt for query (existing indexes) and filter by status in memory
- * Once indexes with status field are built, revert to using both fields in the query
  */
 export const getRecentlyAddedQuestions = async (
   limitCount = 5,
 ): Promise<InterviewQuestion[]> => {
   const constraints: QueryConstraint[] = [
     where("isPublished", "==", true),
+    where("status", "==", "published"),
     orderBy("publishedAt", "desc"),
-    limit(limitCount * 2), // Fetch extra to account for in-memory filtering
+    limit(limitCount),
   ];
 
   const q = query(
@@ -513,24 +506,20 @@ export const getRecentlyAddedQuestions = async (
     ...constraints,
   );
   const querySnap = await getDocs(q);
-  const questions = querySnap.docs.map((doc) => doc.data());
-  // Filter by status in memory (temporary workaround while indexes build)
-  const publishedQuestions = questions.filter((q) => q.status === "published");
-  return publishedQuestions.slice(0, limitCount);
+  return querySnap.docs.map((doc) => doc.data());
 };
 
 /**
  * Get featured questions (for home page)
- * TEMPORARY: Use publishedAt for query (existing indexes) and filter by status in memory
- * Once indexes with status field are built, revert to using both fields in the query
  */
 export const getFeaturedQuestions = async (
   limitCount = 3,
 ): Promise<InterviewQuestion[]> => {
   const constraints: QueryConstraint[] = [
     where("isPublished", "==", true),
+    where("status", "==", "published"),
     orderBy("publishedAt", "desc"),
-    limit(limitCount * 2), // Fetch extra to account for in-memory filtering
+    limit(limitCount),
   ];
 
   const q = query(
@@ -538,10 +527,7 @@ export const getFeaturedQuestions = async (
     ...constraints,
   );
   const querySnap = await getDocs(q);
-  const questions = querySnap.docs.map((doc) => doc.data());
-  // Filter by status in memory (temporary workaround while indexes build)
-  const publishedQuestions = questions.filter((q) => q.status === "published");
-  return publishedQuestions.slice(0, limitCount);
+  return querySnap.docs.map((doc) => doc.data());
 };
 
 /**
@@ -582,6 +568,82 @@ export const createAdminDocumentData = (
     email,
     role: "admin",
   };
+};
+
+/**
+ * Get related questions by topic (excluding current question)
+ */
+export const getRelatedQuestions = async (
+  topic: string,
+  excludeId: string,
+  limitCount = 3,
+): Promise<InterviewQuestion[]> => {
+  const constraints: QueryConstraint[] = [
+    where("isPublished", "==", true),
+    where("status", "==", "published"),
+    where("topic", "==", topic),
+    orderBy("publishedAt", "desc"),
+    limit(limitCount + 1), // Fetch extra to exclude current question
+  ];
+
+  const q = query(
+    collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
+    ...constraints,
+  );
+  const querySnap = await getDocs(q);
+  const questions = querySnap.docs
+    .map((doc) => doc.data())
+    .filter((q) => q.id !== excludeId);
+  return questions.slice(0, limitCount);
+};
+
+/**
+ * Get previous and next questions by publishedAt (for navigation)
+ */
+export const getAdjacentQuestions = async (
+  currentPublishedAt: Date,
+  topic?: string,
+): Promise<{
+  previous: InterviewQuestion | null;
+  next: InterviewQuestion | null;
+}> => {
+  const baseConstraints: QueryConstraint[] = [
+    where("isPublished", "==", true),
+    where("status", "==", "published"),
+    orderBy("publishedAt", "desc"),
+  ];
+
+  if (topic) {
+    baseConstraints.splice(2, 0, where("topic", "==", topic));
+  }
+
+  // Get next (older) question
+  const nextConstraints = [
+    ...baseConstraints,
+    where("publishedAt", "<", Timestamp.fromDate(currentPublishedAt)),
+    limit(1),
+  ];
+  const nextQuery = query(
+    collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
+    ...nextConstraints,
+  );
+  const nextSnap = await getDocs(nextQuery);
+  const next = nextSnap.docs[0]?.data() ?? null;
+
+  // Get previous (newer) question
+  const prevConstraints = [
+    ...baseConstraints,
+    where("publishedAt", ">", Timestamp.fromDate(currentPublishedAt)),
+    limit(1),
+  ];
+  const prevQuery = query(
+    collection(db, QUESTIONS_COLLECTION).withConverter(questionConverter),
+    ...prevConstraints,
+  );
+  const prevSnap = await getDocs(prevQuery);
+  const previous = prevSnap.docs[0]?.data() ?? null;
+
+  return { previous, next };
 };
 
 export { db, serverTimestamp, Timestamp };

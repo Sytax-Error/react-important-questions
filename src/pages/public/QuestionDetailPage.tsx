@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Card,
@@ -16,34 +16,89 @@ import { PageLoader } from "../../components/ui/LoadingSpinner";
 import { Button } from "../../components/ui/Button";
 import { InterviewQuestion } from "../../types/questions";
 import { format } from "date-fns";
-import { getQuestionBySlug } from "../../features/questions/services/questionService";
+import {
+  getQuestionBySlug,
+  getRelatedQuestions,
+  getAdjacentQuestions,
+} from "../../features/questions/services/questionService";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export function QuestionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [question, setQuestion] = useState<InterviewQuestion | null>(null);
+  const [relatedQuestions, setRelatedQuestions] = useState<InterviewQuestion[]>(
+    [],
+  );
+  const [adjacentQuestions, setAdjacentQuestions] = useState<{
+    previous: InterviewQuestion | null;
+    next: InterviewQuestion | null;
+  }>({ previous: null, next: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
+  const fetchQuestion = useCallback(async () => {
     if (!slug) return;
     setLoading(true);
     setError(null);
 
-    getQuestionBySlug(slug)
-      .then((questionData) => {
-        if (questionData && questionData.isPublished) {
-          setQuestion(questionData);
-        } else {
-          setError("Question not found");
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching question:", err);
-        setError("Failed to load question");
-        setLoading(false);
-      });
+    try {
+      const questionData = await getQuestionBySlug(slug);
+      if (questionData && questionData.isPublished) {
+        setQuestion(questionData);
+        // Fetch related and adjacent questions in parallel
+        const [related, adjacent] = await Promise.all([
+          getRelatedQuestions(questionData.topic, questionData.id, 3),
+          getAdjacentQuestions(
+            questionData.publishedAt ?? questionData.createdAt,
+            questionData.topic,
+          ),
+        ]);
+        setRelatedQuestions(related);
+        setAdjacentQuestions(adjacent);
+      } else {
+        setError("Question not found");
+      }
+    } catch (err) {
+      console.error("Error fetching question:", err);
+      setError("Failed to load question");
+    } finally {
+      setLoading(false);
+    }
   }, [slug]);
+
+  useEffect(() => {
+    fetchQuestion();
+  }, [fetchQuestion]);
+
+  const handleCopyCode = async () => {
+    if (!question?.code) return;
+    try {
+      await navigator.clipboard.writeText(question.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!question) return;
+    const url = window.location.href;
+    const title = question.question;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to share:", err);
+    }
+  };
 
   if (loading) {
     return <PageLoader />;
@@ -207,8 +262,8 @@ export function QuestionDetailPage() {
         </div>
       </div>
 
-      {/* Tags */}
-      {question.tags.length > 0 && (
+      {/* Tags & Share */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
           {question.tags.map((tag) => (
             <Badge key={tag} variant="outline" size="sm">
@@ -216,7 +271,31 @@ export function QuestionDetailPage() {
             </Badge>
           ))}
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShare}
+            className="gap-1"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+              />
+            </svg>
+            Share
+          </Button>
+        </div>
+      </div>
 
       {/* Short Answer */}
       <Card>
@@ -253,7 +332,13 @@ export function QuestionDetailPage() {
                   {question.language}
                 </Badge>
               )}
-              <Button variant="ghost" size="sm" className="gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyCode}
+                className="gap-1"
+                aria-label={copied ? "Copied!" : "Copy code"}
+              >
                 <svg
                   className="h-4 w-4"
                   fill="none"
@@ -268,14 +353,24 @@ export function QuestionDetailPage() {
                     d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
                   />
                 </svg>
-                Copy
+                {copied ? "Copied!" : "Copy"}
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <pre className="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 overflow-x-auto text-sm text-gray-100">
-              <code>{question.code}</code>
-            </pre>
+            <SyntaxHighlighter
+              language={question.language?.toLowerCase() || "text"}
+              style={atomDark}
+              customStyle={{
+                borderRadius: "0.5rem",
+                fontSize: "0.875rem",
+                lineHeight: "1.6",
+              }}
+              showLineNumbers={true}
+              wrapLongLines={true}
+            >
+              {question.code}
+            </SyntaxHighlighter>
           </CardContent>
         </Card>
       )}
@@ -334,7 +429,71 @@ export function QuestionDetailPage() {
         </Card>
       )}
 
-      {/* Navigation */}
+      {/* Related Questions */}
+      {relatedQuestions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Related Questions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {relatedQuestions.map((q) => (
+                <Link
+                  key={q.id}
+                  to={`/questions/${q.slug}`}
+                  className="block p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <TopicBadge topic={q.topic} size="sm" />
+                    <DifficultyBadge difficulty={q.difficulty} size="sm" />
+                  </div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                    {q.question}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Previous/Next Navigation */}
+      {(adjacentQuestions.previous || adjacentQuestions.next) && (
+        <Card>
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-between">
+              {adjacentQuestions.previous && (
+                <Link
+                  to={`/questions/${adjacentQuestions.previous.slug}`}
+                  className="flex-1 pr-4"
+                >
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Previous Question
+                  </div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                    {adjacentQuestions.previous.question}
+                  </p>
+                </Link>
+              )}
+              {adjacentQuestions.next && (
+                <Link
+                  to={`/questions/${adjacentQuestions.next.slug}`}
+                  className="flex-1 pl-4 text-right"
+                >
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Next Question
+                  </div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                    {adjacentQuestions.next.question}
+                  </p>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Footer Navigation */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
         <Link
           to="/questions"

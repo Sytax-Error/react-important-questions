@@ -47,9 +47,11 @@ export function Badge({
 
 export function DifficultyBadge({
   difficulty,
+  size = "sm",
   className = "",
 }: {
   difficulty: "Beginner" | "Intermediate" | "Advanced";
+  size?: "sm" | "md" | "lg";
   className?: string;
 }) {
   const variants = {
@@ -59,7 +61,7 @@ export function DifficultyBadge({
   };
 
   return (
-    <Badge variant={variants[difficulty]} size="sm" className={className}>
+    <Badge variant={variants[difficulty]} size={size} className={className}>
       {difficulty}
     </Badge>
   );
@@ -80,13 +82,15 @@ export function StatusBadge({ status }: { status: "draft" | "published" }) {
 
 export function TopicBadge({
   topic,
+  size = "sm",
   className = "",
 }: {
   topic: string;
+  size?: "sm" | "md" | "lg";
   className?: string;
 }) {
   return (
-    <Badge variant="info" size="sm" className={className}>
+    <Badge variant="info" size={size} className={className}>
       {topic}
     </Badge>
   );

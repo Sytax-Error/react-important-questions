@@ -178,12 +178,11 @@ Implemented:
 
 Notes:
 
-- Requires Firestore composite index for queries on (isPublished, status, createdAt)
-- Index creation URL provided in Firebase console error message
+- Firestore composite indexes created for queries on (isPublished, status, publishedAt) and (isPublished, status, createdAt)
 - Uses `usePublicQuestionMeta` hook for statistics and topics/difficulties
 - Uses new `useHomePageQuestions` hook for recently added and featured questions
 - New service functions: `getRecentlyAddedQuestions`, `getFeaturedQuestions`
-- **Temporary workaround**: Uses `publishedAt` ordering (existing index) with in-memory `status === "published"` filtering while composite indexes build. Fetches 2x limit to account for filtering.
+- Indexes now built - queries use proper server-side filtering with both isPublished and status fields
 
 ### Phase 4B — Public Question Listing
 
@@ -875,16 +874,17 @@ Implemented:
 
 Notes:
 
-- Requires Firestore composite index for queries on (isPublished, status, createdAt)
-- Index creation URL provided in Firebase console error message
+- Firestore composite indexes created for queries on (isPublished, status, publishedAt) and (isPublished, status, createdAt)
 - Uses `usePublicQuestionMeta` hook for statistics and topics/difficulties
 - Uses new `useHomePageQuestions` hook for recently added and featured questions
 - New service functions: `getRecentlyAddedQuestions`, `getFeaturedQuestions`
-- **Temporary workaround**: Uses `publishedAt` ordering (existing index) with in-memory `status === "published"` filtering while composite indexes build. Fetches 2x limit to account for filtering.
+- Indexes now built - queries use proper server-side filtering with both isPublished and status fields
 
 ### Phase 4B — Public Question Listing
 
-Implement:
+Status: Completed.
+
+Implemented:
 
 - Published question list
 - Search
@@ -903,43 +903,71 @@ Only published questions may appear.
 
 ### Phase 4C — Question Details
 
-Implement:
+Status: Completed.
 
-- Question title
-- Topic
-- Category
-- Difficulty
-- Short answer
-- Detailed explanation
-- Code example
-- Syntax highlighting
-- Copy-code action
-- Important interview points
-- Follow-up questions
-- Tags
-- Related questions
-- Previous question
-- Next question
-- Shareable URL
+Implemented:
+
+- Question title, topic, category, difficulty
+- Short answer and detailed explanation
+- Code example with syntax highlighting (react-syntax-highlighter, atomDark theme)
+- Copy-code action with clipboard feedback
+- Important interview points (checkmark list)
+- Follow-up questions (numbered list)
+- Tags display
+- Related questions (by topic, excluding current)
+- Previous/Next question navigation (by publishedAt within topic)
+- Share action (Web Share API with clipboard fallback)
+- Breadcrumb navigation
 - Responsive layout
+- Draft questions blocked (only published accessible)
 
-Draft questions must never be publicly accessible.
+Notes:
+
+- New service functions: `getRelatedQuestions`, `getAdjacentQuestions`
+- Added `publishedAt` field to `InterviewQuestion` type
+- Updated `TopicBadge` and `DifficultyBadge` to support `size` prop
+- Uses `react-syntax-highlighter` with Prism/atomDark theme
+- Shareable URL via browser address bar (slug-based routing)
+
+---
 
 ### Phase 4D — Topic Pages
 
-Implement reusable routes for:
+**Requirements (from roadmap):**
 
-- HTML
-- CSS
-- JavaScript
-- TypeScript
-- React
-- React Native
-- Next.js
-- Node.js
-- Express.js
+- Implement reusable routes for: HTML, CSS, JavaScript, TypeScript, React, React Native, Next.js, Node.js, Express.js
+- Do not create duplicate hard-coded page components for every topic
 
-Do not create duplicate hard-coded page components for every topic.
+**Implementation (Completed):**
+
+Status: Completed.
+
+Implemented:
+
+- Reusable `/topics/:topic` route for all 9 topics (HTML, CSS, JavaScript, TypeScript, React, React Native, Next.js, Node.js, Express.js)
+- Breadcrumb navigation (Home → Questions → Topic)
+- Topic header with topic name and question count
+- Question cards with topic badge, difficulty badge, question title, short answer, and tags
+- Responsive grid layout (1/2/3 columns)
+- Loading state with skeleton animations
+- Empty state when no questions exist for the topic
+- Links to individual question detail pages
+- No duplicate hard-coded page components - single reusable TopicPage component
+
+**What We Done (Technical Details):**
+
+- **TopicPage Component** (`src/pages/public/TopicPage.tsx`): Single reusable component handling `/topics/:topic` route parameter. Uses `useParams()` to get topic, `subscribeToPublishedQuestions` with topic filter for real-time updates. Renders breadcrumb, topic header with count, responsive grid of question cards.
+- **Service Function** (`src/features/questions/services/questionService.ts`): `subscribeToPublishedQuestions` now uses proper server-side query with `isPublished`, `status`, `publishedAt` indexes. Accepts `filters.topic` for topic-specific queries. Returns real-time listener via `onSnapshot`.
+- **Badge Components** (`src/components/ui/Badge.tsx`): `TopicBadge` and `DifficultyBadge` updated with `size` prop (`sm` | `md` | `lg`) for consistent sizing in topic cards and question cards.
+- **Route Configuration**: Single route `/topics/:topic` → `TopicPage` in router. No duplicate components per topic.
+- **Home Page Integration**: Dynamic topic cards in "Browse by Topic" section link to `/topics/{topic}` using `encodeURIComponent`.
+
+Notes:
+
+- Uses `subscribeToPublishedQuestions` with topic filter for real-time updates
+- Reuses existing `TopicBadge` and `DifficultyBadge` components
+- Dynamic topic cards on home page link to these pages
+- All 9 topics supported through single route parameter
 
 ---
 

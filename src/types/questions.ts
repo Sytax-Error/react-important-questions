@@ -20,6 +20,7 @@ export interface InterviewQuestion {
   status: PublicationStatus;
   createdAt: Date;
   updatedAt: Date;
+  publishedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
 }
