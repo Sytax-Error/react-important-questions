@@ -6,46 +6,54 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 
-const DeleteConfirmationDialog = ({
-  onOpenChange,
-  open,
-  onConfirm,
-}: {
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
+interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
   onConfirm: () => void;
-}) => {
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  variant?: "default" | "destructive";
+  disabled?: boolean;
+}
+
+export const DeleteConfirmationDialog = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = "Delete",
+  message = "Are you sure you want to delete this item? This action cannot be undone.",
+  confirmText = "Delete",
+  variant = "destructive",
+  disabled = false,
+}: DeleteConfirmationDialogProps) => {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="space-y-2">
-          <DialogTitle className="text-lg font-semibold">
-            Delete Question
-          </DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Are you sure you want to delete this question? This action cannot be
-            undone.
+            {message}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={onClose} disabled={disabled}>
             Cancel
           </Button>
           <Button
-            variant="danger"
+            variant={variant === "destructive" ? "danger" : "primary"}
             onClick={() => {
               onConfirm();
-              onOpenChange(false);
+              onClose();
             }}
+            disabled={disabled}
           >
-            Delete
+            {confirmText}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
-export { DeleteConfirmationDialog };

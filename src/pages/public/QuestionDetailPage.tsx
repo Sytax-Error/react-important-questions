@@ -21,8 +21,29 @@ import {
   getRelatedQuestions,
   getAdjacentQuestions,
 } from "../../features/questions/services/questionService";
+import {
+  BookmarkButton,
+  CompletedButton,
+  useLearning,
+} from "../../features/bookmarks";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+/**
+ * Promise timeout wrapper to prevent infinite loading
+ */
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  timeoutError: string,
+): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(timeoutError)), ms),
+    ),
+  ]);
+}
 
 export function QuestionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -38,21 +59,41 @@ export function QuestionDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const { addRecentlyViewed } = useLearning();
+
   const fetchQuestion = useCallback(async () => {
     if (!slug) return;
     setLoading(true);
     setError(null);
 
     try {
-      const questionData = await getQuestionBySlug(slug);
+      console.log("[QuestionDetailPage] Starting fetch for slug:", slug);
+      // Add timeout to prevent infinite loading on network issues
+      const questionData = await withTimeout(
+        getQuestionBySlug(slug),
+        10000,
+        "Request timed out. Please check your connection and try again.",
+      );
+      console.log("[QuestionDetailPage] Got question data:", questionData);
+
       if (questionData && questionData.isPublished) {
         setQuestion(questionData);
-        // Fetch related and adjacent questions in parallel
+        // Track recently viewed
+        addRecentlyViewed(questionData);
+        // Fetch related and adjacent questions in parallel with timeout
         const [related, adjacent] = await Promise.all([
-          getRelatedQuestions(questionData.topic, questionData.id, 3),
-          getAdjacentQuestions(
-            questionData.publishedAt ?? questionData.createdAt,
-            questionData.topic,
+          withTimeout(
+            getRelatedQuestions(questionData.topic, questionData.id, 3),
+            8000,
+            "Failed to load related questions",
+          ),
+          withTimeout(
+            getAdjacentQuestions(
+              questionData.publishedAt ?? questionData.createdAt,
+              questionData.topic,
+            ),
+            8000,
+            "Failed to load adjacent questions",
           ),
         ]);
         setRelatedQuestions(related);
@@ -61,12 +102,14 @@ export function QuestionDetailPage() {
         setError("Question not found");
       }
     } catch (err) {
-      console.error("Error fetching question:", err);
-      setError("Failed to load question");
+      console.error("[QuestionDetailPage] Error fetching question:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load question";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, addRecentlyViewed]);
 
   useEffect(() => {
     fetchQuestion();
@@ -262,7 +305,7 @@ export function QuestionDetailPage() {
         </div>
       </div>
 
-      {/* Tags & Share */}
+      {/* Tags & Share & Bookmark */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
           {question.tags.map((tag) => (
@@ -272,6 +315,8 @@ export function QuestionDetailPage() {
           ))}
         </div>
         <div className="flex items-center gap-2">
+          <BookmarkButton question={question} size="sm" showLabel />
+          <CompletedButton question={question} size="sm" showLabel />
           <Button
             variant="outline"
             size="sm"

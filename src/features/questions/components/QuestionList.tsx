@@ -14,7 +14,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import {
   subscribeToAllQuestions,
   deleteQuestion,
@@ -468,8 +468,8 @@ export function AdminQuestionList() {
         </Card>
       </div>
       <DeleteConfirmationDialog
-        open={deleteDialog.open}
-        onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
+        isOpen={deleteDialog.open}
+        onClose={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
         onConfirm={handleDeleteConfirmYes}
       />
       <Dialog

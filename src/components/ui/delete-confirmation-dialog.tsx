@@ -1,4 +1,13 @@
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { Trash2 } from "lucide-react";
 
@@ -30,7 +39,7 @@ export const DeleteConfirmationDialog = ({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <DialogClose>
+          <DialogClose onClick={() => onOpenChange(false)}>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button onClick={onConfirm} variant="destructive">

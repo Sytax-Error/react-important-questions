@@ -7,3 +7,4 @@ export * from "./LoadingSpinner";
 export * from "./ErrorBoundary";
 export * from "./DeleteConfirmationDialog";
 export * from "./Select";
+export * from "./Progress";

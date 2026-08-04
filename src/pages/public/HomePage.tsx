@@ -4,6 +4,9 @@ import { TopicBadge, DifficultyBadge } from "../../components/ui/Badge";
 import { usePublicQuestionMeta } from "../../features/questions/hooks/usePublicQuestionMeta";
 import { useHomePageQuestions } from "../../features/questions/hooks/useHomePageQuestions";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
+import { LearningProgress } from "../../features/bookmarks/components/LearningProgress";
+import { RandomQuestion } from "../../features/bookmarks/components/RandomQuestion";
+import { InterviewPractice } from "../../features/bookmarks/components/InterviewPractice";
 
 export function HomePage() {
   const { totalQuestions, topics, difficulties, loading } =
@@ -14,6 +17,12 @@ export function HomePage() {
     loading: questionsLoading,
     error,
   } = useHomePageQuestions();
+
+  // Combine recently added and featured questions for learning features (deduplicate by ID)
+  const allQuestions = [...recentlyAdded, ...featured].filter(
+    (question, index, self) =>
+      index === self.findIndex((q) => q.id === question.id),
+  );
 
   const stats = [
     {
@@ -482,6 +491,19 @@ export function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Learning Progress & Practice */}
+      <section aria-labelledby="learning-heading" className="pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <LearningProgress totalQuestions={totalQuestions} />
+          </div>
+          <div className="lg:col-span-2 space-y-6">
+            <RandomQuestion questions={allQuestions} />
+            <InterviewPractice questions={allQuestions} />
+          </div>
+        </div>
       </section>
 
       {/* Features */}
