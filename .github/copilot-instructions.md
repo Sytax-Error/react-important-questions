@@ -974,6 +974,7 @@ Notes:
 ## Phase 5 — Bookmarking and Learning Features
 
 Implement:
+Status: Completed.
 
 - Bookmark question
 - Remove bookmark

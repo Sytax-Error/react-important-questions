@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "../../components/ui/Card";
 import { DifficultyBadge, TopicBadge, Badge } from "../../components/ui/Badge";
+import { QuestionCard } from "../../components/ui/QuestionCard";
 import { PageLoader } from "../../components/ui/LoadingSpinner";
 import { InterviewQuestion } from "../../types/questions";
 import { subscribeToPublishedQuestions } from "../../features/questions/services/questionService";
@@ -138,38 +139,30 @@ export function TopicPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {questions.map((question) => (
-            <a
-              key={question.id}
-              href={`/questions/${question.slug}`}
-              className="group"
-            >
-              <Card hover className="h-full">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-2 mb-3">
-                    <TopicBadge topic={question.topic} />
-                    <DifficultyBadge difficulty={question.difficulty} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                    {question.question}
-                  </h3>
-                  <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                    {question.shortAnswer}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {question.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" size="sm">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {question.tags.length > 3 && (
-                      <Badge variant="outline" size="sm">
-                        +{question.tags.length - 3}
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </a>
+            <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
+              <div className="flex items-start gap-2 mb-3">
+                <TopicBadge topic={question.topic} />
+                <DifficultyBadge difficulty={question.difficulty} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                {question.question}
+              </h3>
+              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                {question.shortAnswer}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {question.tags.slice(0, 3).map((tag) => (
+                  <Badge key={tag} variant="outline" size="sm">
+                    {tag}
+                  </Badge>
+                ))}
+                {question.tags.length > 3 && (
+                  <Badge variant="outline" size="sm">
+                    +{question.tags.length - 3}
+                  </Badge>
+                )}
+              </div>
+            </QuestionCard>
           ))}
         </div>
       )}

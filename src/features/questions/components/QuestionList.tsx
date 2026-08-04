@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
   StatusBadge,
   TopicBadge,
   DifficultyBadge,
+  Badge,
 } from "@/components/ui/Badge";
-
 import { Input } from "@/components/ui/Input";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
@@ -24,6 +24,8 @@ import {
 } from "@/features/questions/services/questionService";
 import { InterviewQuestion } from "@/types/questions";
 import { useAuth } from "@/features/auth";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export function AdminQuestionList() {
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
@@ -476,15 +478,16 @@ export function AdminQuestionList() {
         open={previewDialog.open}
         onOpenChange={(open) => setPreviewDialog((prev) => ({ ...prev, open }))}
       >
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              Preview: {previewDialog.question?.question}
+            <DialogTitle className="text-xl">
+              {previewDialog.question?.question}
             </DialogTitle>
           </DialogHeader>
           {previewDialog.question && (
             <div className="space-y-6 py-4">
-              <div className="flex items-center gap-2">
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2">
                 <TopicBadge topic={previewDialog.question.topic} />
                 <DifficultyBadge
                   difficulty={previewDialog.question.difficulty}
@@ -494,81 +497,150 @@ export function AdminQuestionList() {
                     previewDialog.question.isPublished ? "published" : "draft"
                   }
                 />
+                {previewDialog.question.language && (
+                  <Badge variant="outline" size="sm">
+                    {previewDialog.question.language}
+                  </Badge>
+                )}
               </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Short Answer
-                </h4>
-                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                  {previewDialog.question.shortAnswer}
-                </p>
+
+              {/* Metadata */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <span>Category: {previewDialog.question.category}</span>
+                <span>
+                  Created:{" "}
+                  {previewDialog.question.createdAt.toLocaleDateString()}
+                </span>
+                <span>
+                  Updated:{" "}
+                  {previewDialog.question.updatedAt.toLocaleDateString()}
+                </span>
               </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Detailed Answer
-                </h4>
-                <div className="mt-1 prose dark:prose-invert max-w-none">
-                  {previewDialog.question.detailedAnswer
-                    .split("\n")
-                    .map((paragraph, i) => (
-                      <p key={i}>{paragraph}</p>
-                    ))}
+
+              {/* Tags */}
+              {previewDialog.question.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {previewDialog.question.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" size="sm">
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
-              </div>
+              )}
+
+              {/* Short Answer */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Short Answer</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                    {previewDialog.question.shortAnswer}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Detailed Answer */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Detailed Answer</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                    {previewDialog.question.detailedAnswer
+                      .split("\n")
+                      .map((paragraph, i) => (
+                        <p key={i}>{paragraph}</p>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Code Example */}
               {previewDialog.question.code && (
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Code Example
-                  </h4>
-                  <pre className="mt-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-4 overflow-x-auto">
-                    <code
-                      className={`language-${previewDialog.question.language || "text"}`}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Code Example</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <SyntaxHighlighter
+                      language={
+                        previewDialog.question.language?.toLowerCase() || "text"
+                      }
+                      style={atomDark}
+                      customStyle={{
+                        borderRadius: "0.5rem",
+                        fontSize: "0.875rem",
+                        lineHeight: "1.6",
+                      }}
+                      showLineNumbers={true}
+                      wrapLongLines={true}
                     >
                       {previewDialog.question.code}
-                    </code>
-                  </pre>
-                </div>
+                    </SyntaxHighlighter>
+                  </CardContent>
+                </Card>
               )}
+
+              {/* Important Points */}
               {previewDialog.question.importantPoints.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Important Points
-                  </h4>
-                  <ul className="mt-1 list-disc list-inside space-y-1 text-gray-900 dark:text-gray-100">
-                    {previewDialog.question.importantPoints.map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      Important Interview Points
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {previewDialog.question.importantPoints.map(
+                        (point, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <svg
+                              className="h-5 w-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span className="text-gray-700 dark:text-gray-300">
+                              {point}
+                            </span>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </CardContent>
+                </Card>
               )}
+
+              {/* Follow-up Questions */}
               {previewDialog.question.followUpQuestions.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Follow-up Questions
-                  </h4>
-                  <ul className="mt-1 list-disc list-inside space-y-1 text-gray-900 dark:text-gray-100">
-                    {previewDialog.question.followUpQuestions.map((q, i) => (
-                      <li key={i}>{q}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {previewDialog.question.tags.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Tags
-                  </h4>
-                  <div className="mt-1 flex flex-wrap gap-1.5">
-                    {previewDialog.question.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center rounded-full bg-primary-100 dark:bg-primary-900/30 px-2.5 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-300"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      Follow-up Questions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ol className="space-y-2 list-decimal list-inside">
+                      {previewDialog.question.followUpQuestions.map((q, i) => (
+                        <li
+                          key={i}
+                          className="text-gray-700 dark:text-gray-300"
+                        >
+                          {q}
+                        </li>
+                      ))}
+                    </ol>
+                  </CardContent>
+                </Card>
               )}
             </div>
           )}

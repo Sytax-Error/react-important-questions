@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/Card";
+import { QuestionCard } from "../../components/ui/QuestionCard";
 import { TopicBadge, DifficultyBadge } from "../../components/ui/Badge";
 import { usePublicQuestionMeta } from "../../features/questions/hooks/usePublicQuestionMeta";
 import { useHomePageQuestions } from "../../features/questions/hooks/useHomePageQuestions";
@@ -89,18 +90,139 @@ export function HomePage() {
 
   const featuredTopics = topics.slice(0, 6);
 
+  const sectionPadding = "px-4 sm:px-6 lg:px-8";
+
   if (loading) {
     return (
-      <div className="space-y-12">
+      <div className="space-y-16">
         {/* Hero Section */}
         <section className="text-center py-16 sm:py-24">
+          <div className="max-w-4xl mx-auto px-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+              Questions for{" "}
+              <span className="text-primary-600 dark:text-primary-400">
+                Frontend Developers
+              </span>
+            </h1>
+            <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Prepare for your next technical interview with curated questions
+              covering React, JavaScript, TypeScript, Node.js, and more.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/questions"
+                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+              >
+                Browse Questions
+              </Link>
+              <Link
+                to="/topics/JavaScript"
+                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+              >
+                Start with JavaScript
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats - Loading */}
+        <section aria-labelledby="stats-heading" className={sectionPadding}>
+          <h2 id="stats-heading" className="sr-only">
+            Statistics
+          </h2>
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {stats.map((stat) => (
+                <Card key={stat.label} className="text-center">
+                  <CardContent className="py-8">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+                      {stat.icon}
+                    </div>
+                    <LoadingSpinner size="lg" />
+                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      {stat.label}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Topics - Loading */}
+        <section aria-labelledby="topics-heading" className={sectionPadding}>
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <h2
+                id="topics-heading"
+                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              >
+                Browse by Topic
+              </h2>
+              <Link
+                to="/questions"
+                className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                View all topics →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Difficulties - Loading */}
+        <section
+          aria-labelledby="difficulties-heading"
+          className={sectionPadding}
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <h2
+                id="difficulties-heading"
+                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              >
+                Filter by Difficulty
+              </h2>
+              <Link
+                to="/questions"
+                className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-16">
+      {/* Hero Section */}
+      <section className="text-center py-16 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
             Questions for{" "}
             <span className="text-primary-600 dark:text-primary-400">
               Frontend Developers
             </span>
           </h1>
-          <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300">
             Prepare for your next technical interview with curated questions
             covering React, JavaScript, TypeScript, Node.js, and more.
           </p>
@@ -118,21 +240,25 @@ export function HomePage() {
               Start with JavaScript
             </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Stats - Loading */}
-        <section aria-labelledby="stats-heading">
-          <h2 id="stats-heading" className="sr-only">
-            Statistics
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* Stats */}
+      <section aria-labelledby="stats-heading" className={sectionPadding}>
+        <h2 id="stats-heading" className="sr-only">
+          Statistics
+        </h2>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {stats.map((stat) => (
               <Card key={stat.label} className="text-center">
                 <CardContent className="py-8">
                   <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
                     {stat.icon}
                   </div>
-                  <LoadingSpinner size="lg" />
+                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
+                    {stat.value}
+                  </div>
                   <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {stat.label}
                   </div>
@@ -140,10 +266,12 @@ export function HomePage() {
               </Card>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Topics - Loading */}
-        <section aria-labelledby="topics-heading">
+      {/* Topics */}
+      <section aria-labelledby="topics-heading" className={sectionPadding}>
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2
               id="topics-heading"
@@ -159,20 +287,37 @@ export function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-              </Card>
+            {featuredTopics.map((topic) => (
+              <Link
+                key={topic}
+                to={`/topics/${encodeURIComponent(topic)}`}
+                className="group block h-full"
+              >
+                <Card hover className="h-full">
+                  <CardContent className="py-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <TopicBadge topic={topic} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                      {topic}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                      Explore interview questions about {topic}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Difficulties - Loading */}
-        <section aria-labelledby="difficulties-heading">
+      {/* Difficulty Levels */}
+      <section aria-labelledby="difficulty-heading" className={sectionPadding}>
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2
-              id="difficulties-heading"
+              id="difficulty-heading"
               className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
             >
               Filter by Difficulty
@@ -184,330 +329,191 @@ export function HomePage() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-              </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {difficulties.map((difficulty) => (
+              <Link
+                key={difficulty}
+                to={`/questions?difficulty=${difficulty}`}
+                className="group block h-full"
+              >
+                <Card hover className="h-full text-center">
+                  <CardContent className="py-6">
+                    <DifficultyBadge difficulty={difficulty} className="mb-3" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {difficulty}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      {difficulty === "Beginner" &&
+                        "Fundamental concepts and basics"}
+                      {difficulty === "Intermediate" &&
+                        "Real-world scenarios and patterns"}
+                      {difficulty === "Advanced" &&
+                        "Complex architectures and optimizations"}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
-        </section>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-12">
-      {/* Hero Section */}
-      <section className="text-center py-16 sm:py-24">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-          Questions for{" "}
-          <span className="text-primary-600 dark:text-primary-400">
-            Frontend Developers
-          </span>
-        </h1>
-        <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Prepare for your next technical interview with curated questions
-          covering React, JavaScript, TypeScript, Node.js, and more.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/questions"
-            className="w-full sm:w-auto px-8 py-3 text-base font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-          >
-            Browse Questions
-          </Link>
-          <Link
-            to="/topics/JavaScript"
-            className="w-full sm:w-auto px-8 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-          >
-            Start with JavaScript
-          </Link>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section aria-labelledby="stats-heading">
-        <h2 id="stats-heading" className="sr-only">
-          Statistics
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="text-center">
-              <CardContent className="py-8">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
-                  {stat.value}
-                </div>
-                <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {stat.label}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Topics */}
-      <section aria-labelledby="topics-heading">
-        <div className="flex items-center justify-between mb-8">
-          <h2
-            id="topics-heading"
-            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
-          >
-            Browse by Topic
-          </h2>
-          <Link
-            to="/questions"
-            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-          >
-            View all topics →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredTopics.map((topic) => (
-            <Link
-              key={topic}
-              to={`/topics/${encodeURIComponent(topic)}`}
-              className="group"
-            >
-              <Card hover className="h-full">
-                <CardContent className="py-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <TopicBadge topic={topic} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                    {topic}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Explore interview questions about {topic}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Difficulty Levels */}
-      <section aria-labelledby="difficulty-heading" className="pt-4">
-        <h2
-          id="difficulty-heading"
-          className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8"
-        >
-          Filter by Difficulty
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {difficulties.map((difficulty) => (
-            <Link
-              key={difficulty}
-              to={`/questions?difficulty=${difficulty}`}
-              className="group"
-            >
-              <Card hover className="h-full text-center">
-                <CardContent className="py-8">
-                  <DifficultyBadge
-                    difficulty={difficulty}
-                    className="mb-3 inline-block"
-                  />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {difficulty}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    {difficulty === "Beginner" &&
-                      "Fundamental concepts and basics"}
-                    {difficulty === "Intermediate" &&
-                      "Real-world scenarios and patterns"}
-                    {difficulty === "Advanced" &&
-                      "Complex architectures and optimizations"}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
         </div>
       </section>
 
       {/* Recently Added Questions */}
-      <section aria-labelledby="recently-added-heading" className="pt-4">
-        <div className="flex items-center justify-between mb-8">
-          <h2
-            id="recently-added-heading"
-            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
-          >
-            Recently Added
-          </h2>
-          <Link
-            to="/questions"
-            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-          >
-            View all →
-          </Link>
-        </div>
-        {questionsLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-              </Card>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-600 dark:text-red-400 mb-4">
-              Failed to load recently added questions
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
-          </div>
-        ) : recentlyAdded.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">
-              No recently added questions yet
-            </p>
+      <section
+        aria-labelledby="recently-added-heading"
+        className={sectionPadding}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2
+              id="recently-added-heading"
+              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+            >
+              Recently Added
+            </h2>
             <Link
               to="/questions"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
-              Browse all questions →
+              View all →
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentlyAdded.map((question) => (
-              <Link
-                key={question.id}
-                to={`/questions/${question.slug}`}
-                className="group"
-              >
-                <Card hover className="h-full">
-                  <CardContent className="py-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <TopicBadge topic={question.topic} />
-                      <DifficultyBadge difficulty={question.difficulty} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                      {question.question}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {question.shortAnswer}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {question.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {question.tags.length > 3 && (
-                        <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded">
-                          +{question.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </CardContent>
+          {questionsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
                 </Card>
-              </Link>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 dark:text-red-400 mb-4">
+                Failed to load recently added questions
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {error}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentlyAdded.map((question) => (
+                <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <TopicBadge topic={question.topic} />
+                    <DifficultyBadge difficulty={question.difficulty} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                    {question.question}
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                    {question.shortAnswer}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {question.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {question.tags.length > 3 && (
+                      <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded">
+                        +{question.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                </QuestionCard>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Featured Questions */}
-      <section aria-labelledby="featured-heading" className="pt-4">
-        <div className="flex items-center justify-between mb-8">
-          <h2
-            id="featured-heading"
-            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
-          >
-            Featured Questions
-          </h2>
-          <Link
-            to="/questions"
-            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-          >
-            View all →
-          </Link>
-        </div>
-        {questionsLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-              </Card>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-600 dark:text-red-400 mb-4">
-              Failed to load featured questions
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
-          </div>
-        ) : featured.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">
-              No featured questions yet
-            </p>
+      <section aria-labelledby="featured-heading" className={sectionPadding}>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2
+              id="featured-heading"
+              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+            >
+              Featured Questions
+            </h2>
             <Link
               to="/questions"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
-              Browse all questions →
+              View all →
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((question) => (
-              <Link
-                key={question.id}
-                to={`/questions/${question.slug}`}
-                className="group"
-              >
-                <Card hover className="h-full">
-                  <CardContent className="py-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded">
-                        Featured
-                      </span>
-                      <TopicBadge topic={question.topic} />
-                      <DifficultyBadge difficulty={question.difficulty} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                      {question.question}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {question.shortAnswer}
-                    </p>
-                  </CardContent>
+          {questionsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
                 </Card>
-              </Link>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 dark:text-red-400 mb-4">
+                Failed to load featured questions
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {error}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featured.map((question) => (
+                <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded">
+                      Featured
+                    </span>
+                    <TopicBadge topic={question.topic} />
+                    <DifficultyBadge difficulty={question.difficulty} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                    {question.question}
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                    {question.shortAnswer}
+                  </p>
+                </QuestionCard>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Learning Progress & Practice */}
-      <section aria-labelledby="learning-heading" className="pt-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <LearningProgress totalQuestions={totalQuestions} />
-          </div>
-          <div className="lg:col-span-2 space-y-6">
-            <RandomQuestion questions={allQuestions} />
-            <InterviewPractice questions={allQuestions} />
-          </div>
+      <section aria-labelledby="learning-heading" className={sectionPadding}>
+        <div className="flex items-center justify-between mb-2">
+          <h2
+            id="learning-heading"
+            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+          >
+            Your Learning Journey
+          </h2>
+        </div>
+
+        {/* Learning Progress - Full Width */}
+        <LearningProgress totalQuestions={totalQuestions} />
+
+        {/* Random Question & Interview Practice - 2 Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <RandomQuestion questions={allQuestions} />
+          <InterviewPractice questions={allQuestions} />
         </div>
       </section>
 
       {/* Features */}
-      <section aria-labelledby="features-heading" className="pt-4">
+      <section aria-labelledby="features-heading" className={sectionPadding}>
         <h2
           id="features-heading"
           className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center"
@@ -562,7 +568,7 @@ export function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="pt-4 text-center">
+      <section className={`${sectionPadding} text-center`}>
         <Card className="bg-primary-600 dark:bg-primary-700 border-none">
           <CardContent className="py-12 px-6">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">

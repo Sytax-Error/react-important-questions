@@ -179,7 +179,7 @@ const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
         >
           <div
             className={cn(
-              "rounded-lg shadow-lg max-w-lg w-full mx-auto p-6",
+              "rounded-lg shadow-lg w-full mx-auto p-6",
               "animate-in fade-in-0 zoom-in-95 duration-200",
             )}
           >
@@ -195,7 +195,7 @@ Dialog.displayName = "Dialog";
 // DialogContent - wrapper for dialog content
 const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
   ({ children, className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6", className)} {...props}>
+    <div ref={ref} className={cn("p-6", "max-w-lg", className)} {...props}>
       {children}
     </div>
   ),

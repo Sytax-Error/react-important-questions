@@ -31,7 +31,7 @@ export function LearningProgress({
         <CardTitle className="text-lg">Learning Progress</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="flex flex-wrap items-center justify-around gap-6 text-center">
           <div>
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {progress.completedCount}
@@ -60,7 +60,7 @@ export function LearningProgress({
 
         <Progress value={progress.completionRate} max={100} className="h-3" />
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {progress.recentlyViewed.length} recently viewed •{" "}
             {progress.completedQuestions.length} completed
