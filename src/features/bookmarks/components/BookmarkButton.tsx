@@ -1,7 +1,31 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { useBookmarks } from "../hooks/useBookmarks";
 import { InterviewQuestion } from "@/types/questions";
+
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const iconVariants = {
+  bookmarked: {
+    scale: 1,
+    rotate: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 20,
+    },
+  },
+  notBookmarked: {
+    scale: 0.8,
+    rotate: 10,
+    transition: {
+      duration: 0.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 interface BookmarkButtonProps {
   question: InterviewQuestion;
@@ -45,7 +69,7 @@ export function BookmarkButton({
   };
 
   return (
-    <Button
+    <MotionButton
       variant={bookmarked ? "primary" : "outline"}
       size={size}
       onClick={handleClick}
@@ -53,13 +77,18 @@ export function BookmarkButton({
       className={`${buttonSizeClasses[size]} ${className}`}
       aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
       aria-pressed={bookmarked}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
-      <svg
-        className={`${iconSizeClasses[size]} ${bookmarked ? "fill-current" : ""}`}
+      <motion.svg
+        className={`${iconSizeClasses[size]} ${bookmarked ? "fill-current text-semantic-interactive-primary" : ""}`}
         fill={bookmarked ? "currentColor" : "none"}
         viewBox="0 0 24 24"
         stroke="currentColor"
         aria-hidden="true"
+        variants={iconVariants}
+        animate={bookmarked ? "bookmarked" : "notBookmarked"}
+        initial="notBookmarked"
       >
         <path
           strokeLinecap="round"
@@ -67,12 +96,12 @@ export function BookmarkButton({
           strokeWidth={2}
           d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
         />
-      </svg>
+      </motion.svg>
       {showLabel && (
-        <span className="ml-1 text-sm font-medium">
+        <span className="ml-1 text-sm font-medium text-semantic-text-primary">
           {bookmarked ? "Saved" : "Save"}
         </span>
       )}
-    </Button>
+    </MotionButton>
   );
 }

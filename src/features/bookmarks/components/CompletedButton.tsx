@@ -1,7 +1,31 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { useLearning } from "../hooks/useLearning";
 import { InterviewQuestion } from "@/types/questions";
+
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const iconVariants = {
+  completed: {
+    scale: 1,
+    rotate: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 20,
+    },
+  },
+  incomplete: {
+    scale: 0.8,
+    rotate: -10,
+    transition: {
+      duration: 0.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 interface CompletedButtonProps {
   question: InterviewQuestion;
@@ -45,7 +69,7 @@ export function CompletedButton({
   };
 
   return (
-    <Button
+    <MotionButton
       variant={completed ? "primary" : "outline"}
       size={size}
       onClick={handleClick}
@@ -53,13 +77,18 @@ export function CompletedButton({
       className={`${buttonSizeClasses[size]} ${className}`}
       aria-label={completed ? "Mark as incomplete" : "Mark as completed"}
       aria-pressed={completed}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
-      <svg
-        className={`${iconSizeClasses[size]} ${completed ? "fill-current text-green-500" : ""}`}
+      <motion.svg
+        className={`${iconSizeClasses[size]} ${completed ? "fill-current text-semantic-status-success-text" : ""}`}
         fill={completed ? "currentColor" : "none"}
         viewBox="0 0 24 24"
         stroke="currentColor"
         aria-hidden="true"
+        variants={iconVariants}
+        animate={completed ? "completed" : "incomplete"}
+        initial="incomplete"
       >
         <path
           strokeLinecap="round"
@@ -67,12 +96,12 @@ export function CompletedButton({
           strokeWidth={2}
           d="M5 13l4 4L19 7"
         />
-      </svg>
+      </motion.svg>
       {showLabel && (
-        <span className="ml-1 text-sm font-medium">
+        <span className="ml-1 text-sm font-medium text-semantic-text-primary">
           {completed ? "Completed" : "Mark Done"}
         </span>
       )}
-    </Button>
+    </MotionButton>
   );
 }

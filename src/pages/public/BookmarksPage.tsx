@@ -1,11 +1,52 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "../../components/ui/Button";
 import { DeleteConfirmationDialog } from "../../components/ui/DeleteConfirmationDialog";
 import { BookmarkList } from "../../features/bookmarks";
 import { useBookmarks } from "../../features/bookmarks/hooks/useBookmarks";
 import { LearningProgress } from "../../features/bookmarks/components/LearningProgress";
 import { usePublicQuestionMeta } from "../../features/questions/hooks/usePublicQuestionMeta";
+
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function BookmarksPage() {
   const { bookmarks, bookmarkCount, removeBookmark, clearAllBookmarks } =
@@ -34,25 +75,32 @@ export function BookmarksPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <MotionDiv
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8 px-4 sm:px-6 lg:px-8"
+    >
+      <MotionDiv variants={headerVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-semantic-text-primary">
             Bookmarks
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-semantic-text-secondary">
             Your saved interview questions for quick reference
-            <span className="ml-2 text-sm font-medium text-primary-600 dark:text-primary-400">
+            <span className="ml-2 text-sm font-medium text-semantic-interactive-primary">
               ({bookmarkCount})
             </span>
           </p>
         </div>
         {bookmarkCount > 0 && (
-          <Button
+          <MotionButton
             variant="outline"
             size="sm"
             onClick={() => setShowClearConfirm(true)}
-            className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:text-red-300"
+            className="text-semantic-status-danger border-semantic-status-danger-border hover:bg-semantic-status-danger-bg dark:hover:bg-semantic-status-danger-bg/20"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <svg
               className="h-4 w-4 mr-1"
@@ -69,25 +117,31 @@ export function BookmarksPage() {
               />
             </svg>
             Clear All
-          </Button>
+          </MotionButton>
         )}
-      </div>
+      </MotionDiv>
 
       {/* Learning Progress */}
-      <LearningProgress totalQuestions={totalQuestions} />
+      <MotionDiv variants={sectionVariants}>
+        <LearningProgress totalQuestions={totalQuestions} />
+      </MotionDiv>
 
-      <BookmarkList
-        bookmarks={bookmarks}
-        onRemoveBookmark={handleRemoveBookmark}
-        emptyAction={
-          <Link
-            to="/questions"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-          >
-            Browse Questions
-          </Link>
-        }
-      />
+      <MotionDiv variants={sectionVariants}>
+        <BookmarkList
+          bookmarks={bookmarks}
+          onRemoveBookmark={handleRemoveBookmark}
+          emptyAction={
+            <MotionLink
+              to="/questions"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-semantic-text-inverse bg-semantic-interactive-primary rounded-lg hover:bg-semantic-interactive-primary-hover focus:outline-none focus:ring-2 focus:ring-semantic-interactive-primary focus:ring-offset-2 dark:focus:ring-offset-semantic-bg-primary transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Browse Questions
+            </MotionLink>
+          }
+        />
+      </MotionDiv>
 
       {/* Remove Single Bookmark Confirmation Dialog */}
       <DeleteConfirmationDialog
@@ -113,6 +167,6 @@ export function BookmarksPage() {
         confirmText="Clear All"
         variant="destructive"
       />
-    </div>
+    </MotionDiv>
   );
 }

@@ -1,12 +1,48 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/Card";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useAuth } from "@/features/auth";
 import { LoginForm } from "@/features/auth/components/LoginForm";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function AdminLoginPage() {
   const { login, user, loading: authLoading } = useAuth();
@@ -36,27 +72,45 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <Card className="w-full max-w-md">
+    <MotionDiv
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen flex items-center justify-center bg-semantic-bg-secondary px-4 sm:px-6 lg:px-8 py-16"
+    >
+      <MotionCard
+        variants={cardVariants}
+        className="w-full max-w-md bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
+          <MotionDiv variants={titleVariants}>
+            <CardTitle className="text-2xl text-semantic-text-primary">
+              Admin Login
+            </CardTitle>
+          </MotionDiv>
+          <MotionDiv
+            variants={cardVariants}
+            className="mt-2 text-sm text-semantic-text-secondary"
+          >
             Sign in to access the admin panel
-          </p>
+          </MotionDiv>
         </CardHeader>
         <CardContent>
-          <LoginForm onSubmit={handleLogin} disabled={authLoading} />
+          <MotionDiv variants={cardVariants}>
+            <LoginForm onSubmit={handleLogin} disabled={authLoading} />
+          </MotionDiv>
 
-          <div className="mt-6 text-center">
-            <Link
+          <MotionDiv variants={cardVariants} className="mt-6 text-center">
+            <MotionLink
               to="/"
-              className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
+              whileHover={{ x: -4 }}
             >
               ← Back to Site
-            </Link>
-          </div>
+            </MotionLink>
+          </MotionDiv>
         </CardContent>
-      </Card>
-    </div>
+      </MotionCard>
+    </MotionDiv>
   );
 }

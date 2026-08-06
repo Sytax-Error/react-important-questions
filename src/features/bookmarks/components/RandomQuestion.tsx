@@ -1,10 +1,52 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { TopicBadge, DifficultyBadge } from "@/components/ui/Badge";
 import { useLearning } from "../hooks/useLearning";
 import { InterviewQuestion } from "@/types/questions";
 import { Link } from "react-router-dom";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const questionVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 interface RandomQuestionProps {
   questions: InterviewQuestion[];
@@ -42,28 +84,41 @@ export function RandomQuestion({
 
   if (questions.length === 0) {
     return (
-      <Card className={className}>
+      <MotionCard
+        initial="hidden"
+        animate="visible"
+        variants={cardVariants}
+        className={className}
+      >
         <CardContent className="p-6 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            No questions available
-          </p>
+          <p className="text-semantic-text-secondary">No questions available</p>
         </CardContent>
-      </Card>
+      </MotionCard>
     );
   }
 
   return (
-    <Card className={className}>
+    <MotionCard
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className={className}
+    >
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <MotionDiv
+          variants={cardVariants}
+          className="flex items-center justify-between mb-4"
+        >
+          <h3 className="text-lg font-semibold text-semantic-text-primary">
             Random Question
           </h3>
-          <Button
+          <MotionButton
             variant="outline"
             size="sm"
             onClick={handleGetRandom}
             disabled={isLoading}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {isLoading ? (
               <svg
@@ -103,12 +158,17 @@ export function RandomQuestion({
                 New Question
               </>
             )}
-          </Button>
-        </div>
+          </MotionButton>
+        </MotionDiv>
 
         {currentQuestion ? (
-          <Link to={`/questions/${currentQuestion.slug}`} className="block">
-            <div className="flex items-center gap-2 mb-3">
+          <MotionLink
+            to={`/questions/${currentQuestion.slug}`}
+            className="block"
+            variants={questionVariants}
+            whileHover={{ x: 4 }}
+          >
+            <MotionDiv className="flex items-center gap-2 mb-3">
               <TopicBadge topic={currentQuestion.topic} size="sm" />
               <DifficultyBadge
                 difficulty={
@@ -119,19 +179,26 @@ export function RandomQuestion({
                 }
                 size="sm"
               />
-            </div>
-            <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors line-clamp-2">
+            </MotionDiv>
+            <h4 className="text-lg font-medium text-semantic-text-primary hover:text-semantic-interactive-primary transition-colors line-clamp-2">
               {currentQuestion.question}
             </h4>
-          </Link>
+          </MotionLink>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-            {excludeCompleted
-              ? "All questions completed!"
-              : "No questions available"}
-          </p>
+          <MotionDiv
+            initial="hidden"
+            animate="visible"
+            variants={cardVariants}
+            className="text-center py-4"
+          >
+            <p className="text-semantic-text-secondary">
+              {excludeCompleted
+                ? "All questions completed!"
+                : "No questions available"}
+            </p>
+          </MotionDiv>
         )}
       </CardContent>
-    </Card>
+    </MotionCard>
   );
 }

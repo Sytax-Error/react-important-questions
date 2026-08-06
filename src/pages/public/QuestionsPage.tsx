@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "../../components/ui/Card";
 import { Badge, DifficultyBadge, TopicBadge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
@@ -12,6 +13,58 @@ import {
   useQuestionSorting,
   SortOption,
 } from "../../features/questions/hooks/useQuestionSorting";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const filterVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function QuestionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,6 +125,7 @@ export function QuestionsPage() {
   // Sorting
   const { sortBy, setSortBy, sortedQuestions, sortOptions } =
     useQuestionSorting(questions);
+  console.log(sortedQuestions);
 
   // Handle filter changes with pagination reset
   const handleTopicChange = useCallback(
@@ -143,10 +197,13 @@ export function QuestionsPage() {
 
   if (error) {
     return (
-      <Card className="text-center py-12">
+      <MotionCard
+        variants={sectionVariants}
+        className="text-center py-12 bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardContent>
           <svg
-            className="mx-auto h-12 w-12 text-red-400"
+            className="mx-auto h-12 w-12 text-semantic-status-danger"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -159,39 +216,52 @@ export function QuestionsPage() {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+          <h3 className="mt-4 text-lg font-medium text-semantic-text-primary">
             Failed to load questions
           </h3>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">{error}</p>
-          <Button onClick={refresh} className="mt-4">
+          <p className="mt-2 text-semantic-text-secondary">{error}</p>
+          <MotionButton
+            onClick={refresh}
+            className="mt-4"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             Try Again
-          </Button>
+          </MotionButton>
         </CardContent>
-      </Card>
+      </MotionCard>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <MotionDiv
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8 px-4 sm:px-6 lg:px-8"
+    >
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+      <MotionDiv variants={sectionVariants}>
+        <h1 className="text-3xl font-bold text-semantic-text-primary">
           All Questions
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-semantic-text-secondary">
           Browse and search through all published interview questions
         </p>
-      </div>
+      </MotionDiv>
 
       {/* Filters */}
-      <Card>
+      <MotionCard
+        variants={sectionVariants}
+        className="bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardContent className="pt-6">
-          <div className="space-y-6">
+          <MotionDiv variants={filterVariants} className="space-y-6">
             {/* Search */}
             <div>
               <label
                 htmlFor="search"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-semantic-text-secondary mb-2"
               >
                 Search
               </label>
@@ -210,7 +280,7 @@ export function QuestionsPage() {
               <div>
                 <label
                   htmlFor="topic"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Topic
                 </label>
@@ -226,7 +296,7 @@ export function QuestionsPage() {
               <div>
                 <label
                   htmlFor="category"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Category
                 </label>
@@ -242,7 +312,7 @@ export function QuestionsPage() {
               <div>
                 <label
                   htmlFor="difficulty"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Difficulty
                 </label>
@@ -258,7 +328,7 @@ export function QuestionsPage() {
               <div>
                 <label
                   htmlFor="sort"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Sort By
                 </label>
@@ -276,62 +346,74 @@ export function QuestionsPage() {
 
             {/* Clear Filters */}
             <div className="flex justify-start">
-              <Button
+              <MotionButton
                 variant="outline"
                 onClick={handleClearFilters}
                 disabled={!hasActiveFilters}
                 className="w-full sm:w-auto"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Clear Filters
-              </Button>
+              </MotionButton>
             </div>
 
             {/* Tags Filter */}
             {allTags.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <MotionDiv variants={filterVariants}>
+                <label className="block text-sm font-medium text-semantic-text-secondary mb-2">
                   Tags
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {allTags.map((tag) => (
-                    <button
+                    <MotionButton
                       key={tag}
                       type="button"
                       onClick={() => handleTagToggle(tag)}
+                      variant="outline"
+                      size="sm"
                       className={`inline-flex items-center font-medium rounded-full px-2 py-0.5 text-xs cursor-pointer transition-colors ${
                         selectedTags.includes(tag)
-                          ? "bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-400"
-                          : "border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                          ? "bg-semantic-interactive-primary/10 text-semantic-interactive-primary border-semantic-interactive-primary"
+                          : "border-semantic-border-primary text-semantic-text-secondary hover:bg-semantic-interactive-hover dark:hover:bg-semantic-bg-tertiary"
                       }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
                       {tag}
-                    </button>
+                    </MotionButton>
                   ))}
                 </div>
-              </div>
+              </MotionDiv>
             )}
-          </div>
+          </MotionDiv>
         </CardContent>
-      </Card>
+      </MotionCard>
 
       {/* Results Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+      <MotionDiv
+        variants={sectionVariants}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <p className="text-sm text-semantic-text-tertiary">
           {sortedQuestions.length} question
           {sortedQuestions.length !== 1 ? "s" : ""} found
           {hasMore && (
-            <span className="text-primary-600 dark:text-primary-400 ml-2">
+            <span className="text-semantic-interactive-primary ml-2">
               (+ more available)
             </span>
           )}
         </p>
-      </div>
+      </MotionDiv>
 
       {sortedQuestions.length === 0 ? (
-        <Card className="text-center py-12">
+        <MotionCard
+          variants={sectionVariants}
+          className="text-center py-12 bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardContent>
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-semantic-text-tertiary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -344,59 +426,73 @@ export function QuestionsPage() {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="mt-4 text-lg font-medium text-semantic-text-primary">
               No questions found
             </h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-semantic-text-secondary">
               Try adjusting your filters or search terms.
             </p>
             {hasActiveFilters && (
-              <Button onClick={handleClearFilters} className="mt-4">
+              <MotionButton
+                onClick={handleClearFilters}
+                className="mt-4"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 Clear All Filters
-              </Button>
+              </MotionButton>
             )}
           </CardContent>
-        </Card>
+        </MotionCard>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <MotionDiv
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {sortedQuestions.map((question) => (
-              <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
-                <div className="flex items-start gap-2 mb-3">
-                  <TopicBadge topic={question.topic} />
-                  <DifficultyBadge difficulty={question.difficulty} />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                  {question.question}
-                </h3>
-                <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                  {question.shortAnswer}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {question.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} variant="outline" size="sm">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {question.tags.length > 3 && (
-                    <Badge variant="outline" size="sm">
-                      +{question.tags.length - 3}
-                    </Badge>
-                  )}
-                </div>
-              </QuestionCard>
+              <MotionDiv key={question.id} variants={itemVariants}>
+                <QuestionCard href={`/questions/${question.slug}`}>
+                  <div className="flex items-start gap-2 mb-3">
+                    <TopicBadge topic={question.topic} />
+                    <DifficultyBadge difficulty={question.difficulty} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-semantic-text-primary group-hover:text-semantic-interactive-primary dark:group-hover:text-semantic-interactive-primary transition-colors line-clamp-2">
+                    {question.question}
+                  </h3>
+                  <p className="mt-3 text-sm text-semantic-text-secondary line-clamp-2">
+                    {question.shortAnswer}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {question.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" size="sm">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {question.tags.length > 3 && (
+                      <Badge variant="outline" size="sm">
+                        +{question.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </QuestionCard>
+              </MotionDiv>
             ))}
-          </div>
+          </MotionDiv>
 
           {/* Load More Button */}
           {hasMore && (
-            <div className="text-center pt-4">
-              <Button
+            <MotionDiv variants={sectionVariants} className="text-center pt-4">
+              <MotionButton
                 variant="outline"
                 size="lg"
                 onClick={loadMore}
                 disabled={loadingMore}
                 className="w-full sm:w-auto"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 {loadingMore ? (
                   <>
@@ -411,7 +507,7 @@ export function QuestionsPage() {
                         cy="12"
                         r="10"
                         stroke="currentColor"
-                        strokeWidth="4"
+                        strokeWidth={4}
                       />
                       <path
                         className="opacity-75"
@@ -424,11 +520,11 @@ export function QuestionsPage() {
                 ) : (
                   "Load More Questions"
                 )}
-              </Button>
-            </div>
+              </MotionButton>
+            </MotionDiv>
           )}
         </>
       )}
-    </div>
+    </MotionDiv>
   );
 }

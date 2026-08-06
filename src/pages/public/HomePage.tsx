@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "../../components/ui/Card";
 import { QuestionCard } from "../../components/ui/QuestionCard";
 import { TopicBadge, DifficultyBadge } from "../../components/ui/Badge";
@@ -8,6 +9,8 @@ import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { LearningProgress } from "../../features/bookmarks/components/LearningProgress";
 import { RandomQuestion } from "../../features/bookmarks/components/RandomQuestion";
 import { InterviewPractice } from "../../features/bookmarks/components/InterviewPractice";
+
+const MotionLink = motion(Link);
 
 export function HomePage() {
   const { totalQuestions, topics, difficulties, loading } =
@@ -90,517 +93,765 @@ export function HomePage() {
 
   const featuredTopics = topics.slice(0, 6);
 
-  const sectionPadding = "px-4 sm:px-6 lg:px-8";
+  // Framer Motion variants for consistent animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    },
+  };
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    },
+  };
+
+  const heroVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    },
+  };
+
+  const buttonVariants = (index: number) => ({
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        delay: 0.3 + index * 0.1,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    },
+  });
 
   if (loading) {
     return (
       <div className="space-y-16">
-        {/* Hero Section */}
+        {/* Hero Section - Loading */}
         <section className="text-center py-16 sm:py-24">
           <div className="max-w-4xl mx-auto px-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-              Questions for{" "}
-              <span className="text-primary-600 dark:text-primary-400">
-                Frontend Developers
-              </span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Prepare for your next technical interview with curated questions
-              covering React, JavaScript, TypeScript, Node.js, and more.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/questions"
-                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={heroVariants}
+              className="space-y-6"
+            >
+              <motion.h1
+                variants={itemVariants}
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-semantic-text-primary tracking-tight"
               >
-                Browse Questions
-              </Link>
-              <Link
-                to="/topics/JavaScript"
-                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+                Questions for{" "}
+                <span className="text-semantic-interactive-primary">
+                  Frontend Developers
+                </span>
+              </motion.h1>
+              <motion.p
+                variants={itemVariants}
+                className="text-lg sm:text-xl text-semantic-text-secondary max-w-3xl mx-auto"
               >
-                Start with JavaScript
-              </Link>
-            </div>
+                Prepare for your next technical interview with curated questions
+                covering React, JavaScript, TypeScript, Node.js, and more.
+              </motion.p>
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              >
+                <div className="w-full sm:w-auto h-12 bg-semantic-bg-tertiary rounded-lg animate-pulse" />
+                <div className="w-full sm:w-auto h-12 bg-semantic-bg-tertiary rounded-lg animate-pulse" />
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
         {/* Stats - Loading */}
-        <section aria-labelledby="stats-heading" className={sectionPadding}>
-          <h2 id="stats-heading" className="sr-only">
-            Statistics
-          </h2>
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <section
+          aria-labelledby="stats-heading"
+          className="px-4 sm:px-6 lg:px-8"
+        >
+          <motion.section
+            initial="hidden"
+            animate="visible"
+            variants={sectionVariants}
+            className="max-w-7xl mx-auto"
+          >
+            <h2 id="stats-heading" className="sr-only">
+              Statistics
+            </h2>
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+            >
               {stats.map((stat) => (
-                <Card key={stat.label} className="text-center">
-                  <CardContent className="py-8">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
-                      {stat.icon}
-                    </div>
-                    <LoadingSpinner size="lg" />
-                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      {stat.label}
-                    </div>
-                  </CardContent>
-                </Card>
+                <motion.div key={stat.label} variants={itemVariants}>
+                  <Card className="text-center">
+                    <CardContent className="py-8">
+                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-semantic-interactive-primary/10 text-semantic-interactive-primary">
+                        {stat.icon}
+                      </div>
+                      <LoadingSpinner size="lg" />
+                      <div className="mt-1 text-sm text-semantic-text-tertiary">
+                        {stat.label}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.section>
         </section>
 
         {/* Topics - Loading */}
-        <section aria-labelledby="topics-heading" className={sectionPadding}>
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+        <section
+          aria-labelledby="topics-heading"
+          className="px-4 sm:px-6 lg:px-8"
+        >
+          <motion.section
+            initial="hidden"
+            animate="visible"
+            variants={sectionVariants}
+            className="max-w-7xl mx-auto"
+          >
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center justify-between mb-8"
+            >
               <h2
                 id="topics-heading"
-                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+                className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
               >
                 Browse by Topic
               </h2>
               <Link
                 to="/questions"
-                className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
               >
                 View all topics →
               </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            </motion.div>
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                </Card>
+                <motion.div key={i} variants={itemVariants}>
+                  <Card className="p-6">
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-3/4 mb-4 animate-pulse" />
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-1/2 animate-pulse" />
+                  </Card>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.section>
         </section>
 
         {/* Difficulties - Loading */}
         <section
           aria-labelledby="difficulties-heading"
-          className={sectionPadding}
+          className="px-4 sm:px-6 lg:px-8"
         >
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+          <motion.section
+            initial="hidden"
+            animate="visible"
+            variants={sectionVariants}
+            className="max-w-7xl mx-auto"
+          >
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center justify-between mb-8"
+            >
               <h2
                 id="difficulties-heading"
-                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+                className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
               >
                 Filter by Difficulty
               </h2>
               <Link
                 to="/questions"
-                className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
               >
                 View all →
               </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            </motion.div>
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                </Card>
+                <motion.div key={i} variants={itemVariants}>
+                  <Card className="p-6 text-center">
+                    <div className="h-6 bg-semantic-bg-tertiary rounded w-1/4 mx-auto mb-4 animate-pulse" />
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-1/2 mx-auto animate-pulse" />
+                  </Card>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.section>
         </section>
       </div>
     );
   }
 
   return (
-    <div className="space-y-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-16"
+    >
       {/* Hero Section */}
-      <section className="text-center py-16 sm:py-24">
+      <motion.section
+        variants={sectionVariants}
+        className="text-center py-16 sm:py-24"
+      >
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-            Questions for{" "}
-            <span className="text-primary-600 dark:text-primary-400">
-              Frontend Developers
-            </span>
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300">
-            Prepare for your next technical interview with curated questions
-            covering React, JavaScript, TypeScript, Node.js, and more.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/questions"
-              className="w-full sm:w-auto px-8 py-3 text-base font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+          <motion.div variants={heroVariants} className="space-y-6">
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-semantic-text-primary tracking-tight"
             >
-              Browse Questions
-            </Link>
-            <Link
-              to="/topics/JavaScript"
-              className="w-full sm:w-auto px-8 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+              Questions for{" "}
+              <span className="text-semantic-interactive-primary">
+                Frontend Developers
+              </span>
+            </motion.h1>
+            <motion.p
+              variants={itemVariants}
+              className="text-lg sm:text-xl text-semantic-text-secondary max-w-3xl mx-auto"
             >
-              Start with JavaScript
-            </Link>
-          </div>
+              Prepare for your next technical interview with curated questions
+              covering React, JavaScript, TypeScript, Node.js, and more.
+            </motion.p>
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <MotionLink
+                to="/questions"
+                variants={buttonVariants(0)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-white bg-semantic-interactive-primary rounded-lg hover:bg-semantic-interactive-primary-hover focus:outline-none focus:ring-2 focus:ring-semantic-interactive-primary focus:ring-offset-2 dark:focus:ring-offset-semantic-bg-primary transition-colors"
+              >
+                Browse Questions
+              </MotionLink>
+              <MotionLink
+                to="/topics/JavaScript"
+                variants={buttonVariants(1)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full sm:w-auto px-8 py-3 text-base font-medium text-semantic-text-primary bg-semantic-bg-primary border border-semantic-border-primary rounded-lg hover:bg-semantic-interactive-hover dark:hover:bg-semantic-bg-tertiary focus:outline-none focus:ring-2 focus:ring-semantic-interactive-primary focus:ring-offset-2 dark:focus:ring-offset-semantic-bg-primary transition-colors"
+              >
+                Start with JavaScript
+              </MotionLink>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Stats */}
-      <section aria-labelledby="stats-heading" className={sectionPadding}>
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="stats-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
         <h2 id="stats-heading" className="sr-only">
           Statistics
         </h2>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {stats.map((stat) => (
-              <Card key={stat.label} className="text-center">
-                <CardContent className="py-8">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
-                    {stat.icon}
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
-                    {stat.value}
-                  </div>
-                  <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {stat.label}
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div key={stat.label} variants={itemVariants}>
+                <Card className="text-center">
+                  <CardContent className="py-8">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-semantic-interactive-primary/10 text-semantic-interactive-primary">
+                      {stat.icon}
+                    </div>
+                    <div className="text-3xl sm:text-4xl font-bold text-semantic-text-primary">
+                      {stat.value}
+                    </div>
+                    <div className="mt-1 text-sm text-semantic-text-tertiary">
+                      {stat.label}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* Topics */}
-      <section aria-labelledby="topics-heading" className={sectionPadding}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="topics-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-between mb-8"
+          >
             <h2
               id="topics-heading"
-              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
             >
               Browse by Topic
             </h2>
             <Link
               to="/questions"
-              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
             >
               View all topics →
             </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          </motion.div>
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {featuredTopics.map((topic) => (
-              <Link
-                key={topic}
-                to={`/topics/${encodeURIComponent(topic)}`}
-                className="group block h-full"
-              >
-                <Card hover className="h-full">
-                  <CardContent className="py-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <TopicBadge topic={topic} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                      {topic}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                      Explore interview questions about {topic}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
+              <motion.div key={topic} variants={itemVariants}>
+                <Link
+                  to={`/topics/${encodeURIComponent(topic)}`}
+                  className="group block h-full"
+                >
+                  <Card hover className="h-full">
+                    <CardContent className="py-6">
+                      <motion.div
+                        variants={itemVariants}
+                        className="flex items-center justify-between mb-3"
+                      >
+                        <TopicBadge topic={topic} />
+                      </motion.div>
+                      <motion.h3
+                        variants={itemVariants}
+                        className="text-lg font-semibold text-semantic-text-primary group-hover:text-semantic-interactive-primary dark:group-hover:text-semantic-interactive-primary transition-colors line-clamp-2"
+                      >
+                        {topic}
+                      </motion.h3>
+                      <motion.p
+                        variants={itemVariants}
+                        className="mt-2 text-sm text-semantic-text-tertiary line-clamp-2"
+                      >
+                        Explore interview questions about {topic}
+                      </motion.p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* Difficulty Levels */}
-      <section aria-labelledby="difficulty-heading" className={sectionPadding}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="difficulty-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-between mb-8"
+          >
             <h2
               id="difficulty-heading"
-              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
             >
               Filter by Difficulty
             </h2>
             <Link
               to="/questions"
-              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
             >
               View all →
             </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          </motion.div>
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {difficulties.map((difficulty) => (
-              <Link
-                key={difficulty}
-                to={`/questions?difficulty=${difficulty}`}
-                className="group block h-full"
-              >
-                <Card hover className="h-full text-center">
-                  <CardContent className="py-6">
-                    <DifficultyBadge difficulty={difficulty} className="mb-3" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      {difficulty}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      {difficulty === "Beginner" &&
-                        "Fundamental concepts and basics"}
-                      {difficulty === "Intermediate" &&
-                        "Real-world scenarios and patterns"}
-                      {difficulty === "Advanced" &&
-                        "Complex architectures and optimizations"}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
+              <motion.div key={difficulty} variants={itemVariants}>
+                <Link
+                  to={`/questions?difficulty=${difficulty}`}
+                  className="group block h-full"
+                >
+                  <Card hover className="h-full text-center">
+                    <CardContent className="py-6">
+                      <motion.div variants={itemVariants} className="mb-3">
+                        <DifficultyBadge difficulty={difficulty} />
+                      </motion.div>
+                      <motion.h3
+                        variants={itemVariants}
+                        className="text-lg font-semibold text-semantic-text-primary"
+                      >
+                        {difficulty}
+                      </motion.h3>
+                      <motion.p
+                        variants={itemVariants}
+                        className="mt-2 text-sm text-semantic-text-tertiary"
+                      >
+                        {difficulty === "Beginner" &&
+                          "Fundamental concepts and basics"}
+                        {difficulty === "Intermediate" &&
+                          "Real-world scenarios and patterns"}
+                        {difficulty === "Advanced" &&
+                          "Complex architectures and optimizations"}
+                      </motion.p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* Recently Added Questions */}
-      <section
+      <motion.section
+        variants={sectionVariants}
         aria-labelledby="recently-added-heading"
-        className={sectionPadding}
+        className="px-4 sm:px-6 lg:px-8"
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-between mb-8"
+          >
             <h2
               id="recently-added-heading"
-              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
             >
               Recently Added
             </h2>
             <Link
               to="/questions"
-              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
             >
               View all →
             </Link>
-          </div>
+          </motion.div>
           {questionsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                </Card>
+                <motion.div key={i} variants={itemVariants}>
+                  <Card className="p-6">
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-3/4 mb-4 animate-pulse" />
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-1/2 animate-pulse" />
+                  </Card>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600 dark:text-red-400 mb-4">
+            <motion.div variants={itemVariants} className="text-center py-12">
+              <motion.p className="text-semantic-status-danger mb-4">
                 Failed to load recently added questions
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              </motion.p>
+              <motion.p className="text-sm text-semantic-text-tertiary">
                 {error}
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {recentlyAdded.map((question) => (
-                <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TopicBadge topic={question.topic} />
-                    <DifficultyBadge difficulty={question.difficulty} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                    {question.question}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                    {question.shortAnswer}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {question.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {question.tags.length > 3 && (
-                      <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded">
-                        +{question.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                </QuestionCard>
+                <motion.div key={question.id} variants={itemVariants}>
+                  <QuestionCard href={`/questions/${question.slug}`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <TopicBadge topic={question.topic} />
+                      <DifficultyBadge difficulty={question.difficulty} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-semantic-text-primary group-hover:text-semantic-interactive-primary dark:group-hover:text-semantic-interactive-primary transition-colors line-clamp-2">
+                      {question.question}
+                    </h3>
+                    <p className="mt-2 text-sm text-semantic-text-tertiary line-clamp-2">
+                      {question.shortAnswer}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {question.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 text-xs bg-semantic-bg-tertiary text-semantic-text-secondary rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {question.tags.length > 3 && (
+                        <span className="px-2 py-0.5 text-xs bg-semantic-bg-tertiary text-semantic-text-tertiary rounded">
+                          +{question.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </QuestionCard>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Featured Questions */}
-      <section aria-labelledby="featured-heading" className={sectionPadding}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="featured-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-between mb-8"
+          >
             <h2
               id="featured-heading"
-              className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
             >
               Featured Questions
             </h2>
             <Link
               to="/questions"
-              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
             >
               View all →
             </Link>
-          </div>
+          </motion.div>
           {questionsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                </Card>
+                <motion.div key={i} variants={itemVariants}>
+                  <Card className="p-6">
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-3/4 mb-4 animate-pulse" />
+                    <div className="h-4 bg-semantic-bg-tertiary rounded w-1/2 animate-pulse" />
+                  </Card>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600 dark:text-red-400 mb-4">
+            <motion.div variants={itemVariants} className="text-center py-12">
+              <motion.p className="text-semantic-status-danger mb-4">
                 Failed to load featured questions
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              </motion.p>
+              <motion.p className="text-sm text-semantic-text-tertiary">
                 {error}
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {featured.map((question) => (
-                <QuestionCard key={question.id} href={`/questions/${question.slug}`}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded">
-                      Featured
-                    </span>
-                    <TopicBadge topic={question.topic} />
-                    <DifficultyBadge difficulty={question.difficulty} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                    {question.question}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                    {question.shortAnswer}
-                  </p>
-                </QuestionCard>
+                <motion.div key={question.id} variants={itemVariants}>
+                  <QuestionCard href={`/questions/${question.slug}`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-0.5 text-xs font-medium bg-semantic-status-warning-bg text-semantic-status-warning-text rounded">
+                        Featured
+                      </span>
+                      <TopicBadge topic={question.topic} />
+                      <DifficultyBadge difficulty={question.difficulty} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-semantic-text-primary group-hover:text-semantic-interactive-primary dark:group-hover:text-semantic-interactive-primary transition-colors line-clamp-2">
+                      {question.question}
+                    </h3>
+                    <p className="mt-2 text-sm text-semantic-text-tertiary line-clamp-2">
+                      {question.shortAnswer}
+                    </p>
+                  </QuestionCard>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Learning Progress & Practice */}
-      <section aria-labelledby="learning-heading" className={sectionPadding}>
-        <div className="flex items-center justify-between mb-2">
-          <h2
-            id="learning-heading"
-            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="learning-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-between mb-2"
           >
-            Your Learning Journey
-          </h2>
-        </div>
+            <h2
+              id="learning-heading"
+              className="text-2xl sm:text-3xl font-bold text-semantic-text-primary"
+            >
+              Your Learning Journey
+            </h2>
+          </motion.div>
 
-        {/* Learning Progress - Full Width */}
-        <LearningProgress totalQuestions={totalQuestions} />
+          {/* Learning Progress - Full Width */}
+          <motion.div variants={itemVariants}>
+            <LearningProgress totalQuestions={totalQuestions} />
+          </motion.div>
 
-        {/* Random Question & Interview Practice - 2 Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <RandomQuestion questions={allQuestions} />
-          <InterviewPractice questions={allQuestions} />
-        </div>
-      </section>
+          {/* Random Question & Interview Practice - 2 Columns */}
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6"
+          >
+            <motion.div variants={itemVariants}>
+              <RandomQuestion questions={allQuestions} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <InterviewPractice questions={allQuestions} />
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* Features */}
-      <section aria-labelledby="features-heading" className={sectionPadding}>
-        <h2
-          id="features-heading"
-          className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center"
-        >
-          Features
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Search & Filter",
-              description:
-                "Find questions by topic, difficulty, tags, or keyword search across questions and answers.",
-            },
-            {
-              title: "Code Examples",
-              description:
-                "Syntax-highlighted code snippets with copy-to-clipboard functionality.",
-            },
-            {
-              title: "Bookmarks",
-              description:
-                "Save questions for later review using localStorage - no account required.",
-            },
-            {
-              title: "Dark Mode",
-              description:
-                "Beautiful dark/light theme with system preference detection and manual toggle.",
-            },
-            {
-              title: "Admin Panel",
-              description:
-                "Secure admin dashboard for managing questions with draft/publish workflow.",
-            },
-            {
-              title: "Responsive",
-              description:
-                "Optimized for mobile, tablet, and desktop with Tailwind CSS.",
-            },
-          ].map((feature) => (
-            <Card key={feature.title} className="text-center">
-              <CardContent className="py-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <motion.section
+        variants={sectionVariants}
+        aria-labelledby="features-heading"
+        className="px-4 sm:px-6 lg:px-8"
+      >
+        <motion.div variants={containerVariants} className="max-w-7xl mx-auto">
+          <motion.h2
+            variants={itemVariants}
+            id="features-heading"
+            className="text-2xl sm:text-3xl font-bold text-semantic-text-primary mb-8 text-center"
+          >
+            Features
+          </motion.h2>
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {[
+              {
+                title: "Search & Filter",
+                description:
+                  "Find questions by topic, difficulty, tags, or keyword search across questions and answers.",
+              },
+              {
+                title: "Code Examples",
+                description:
+                  "Syntax-highlighted code snippets with copy-to-clipboard functionality.",
+              },
+              {
+                title: "Bookmarks",
+                description:
+                  "Save questions for later review using localStorage - no account required.",
+              },
+              {
+                title: "Dark Mode",
+                description:
+                  "Beautiful dark/light theme with system preference detection and manual toggle.",
+              },
+              {
+                title: "Admin Panel",
+                description:
+                  "Secure admin dashboard for managing questions with draft/publish workflow.",
+              },
+              {
+                title: "Responsive",
+                description:
+                  "Optimized for mobile, tablet, and desktop with Tailwind CSS.",
+              },
+            ].map((feature) => (
+              <motion.div key={feature.title} variants={itemVariants}>
+                <Card className="text-center">
+                  <CardContent className="py-6">
+                    <h3 className="text-lg font-semibold text-semantic-text-primary">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-semantic-text-tertiary">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* CTA */}
-      <section className={`${sectionPadding} text-center`}>
-        <Card className="bg-primary-600 dark:bg-primary-700 border-none">
-          <CardContent className="py-12 px-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-              Ready to Start Preparing?
-            </h2>
-            <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
-              Browse hundreds of interview questions across all major frontend
-              technologies. Free, open-source, and always up to date.
-            </p>
-            <Link
-              to="/questions"
-              className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium text-primary-600 bg-white rounded-lg hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 transition-colors"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+      <motion.section
+        variants={sectionVariants}
+        className="px-4 sm:px-6 lg:px-8 text-center"
+      >
+        <motion.div variants={itemVariants} className="max-w-3xl mx-auto">
+          <Card className="bg-semantic-interactive-primary dark:bg-semantic-interactive-primary-hover border-none">
+            <CardContent className="py-12 px-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                Ready to Start Preparing?
+              </h2>
+              <p className="text-semantic-interactive-primary/90 mb-8 max-w-2xl mx-auto">
+                Browse hundreds of interview questions across all major frontend
+                technologies. Free, open-source, and always up to date.
+              </p>
+              <MotionLink
+                to="/questions"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium text-semantic-interactive-primary bg-white rounded-lg hover:bg-semantic-bg-tertiary focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-semantic-interactive-primary transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                />
-              </svg>
-              Browse Questions
-            </Link>
-          </CardContent>
-        </Card>
-      </section>
-    </div>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  />
+                </svg>
+                Browse Questions
+              </MotionLink>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.section>
+    </motion.div>
   );
 }

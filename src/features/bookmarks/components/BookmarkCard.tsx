@@ -1,9 +1,40 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
 import { DifficultyBadge, TopicBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Bookmark } from "@/types/bookmarks";
 import { format } from "date-fns";
+
+const MotionCard = motion(Card);
+const MotionLink = motion(Link);
+const MotionDiv = motion.div;
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const removeButtonVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -20,10 +51,18 @@ export function BookmarkCard({
   showRemoveButton = true,
 }: BookmarkCardProps) {
   return (
-    <Link to={`/questions/${bookmark.questionSlug}`} className="group block">
-      <Card hover className="h-full flex flex-col">
+    <MotionLink
+      to={`/questions/${bookmark.questionSlug}`}
+      className="group block"
+      variants={cardVariants}
+      whileHover={{ y: -4 }}
+    >
+      <MotionCard
+        hover
+        className="h-full flex flex-col bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardContent className="p-6 flex flex-col flex-1">
-          <div className="flex items-start justify-between gap-2 mb-3">
+          <MotionDiv className="flex items-start justify-between gap-2 mb-3">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <TopicBadge topic={bookmark.topic} size="sm" />
               <DifficultyBadge
@@ -37,7 +76,8 @@ export function BookmarkCard({
               />
             </div>
             {showRemoveButton && (
-              <Button
+              <MotionButton
+                variants={removeButtonVariants}
                 variant="ghost"
                 size="sm"
                 onClick={(e) => {
@@ -45,8 +85,10 @@ export function BookmarkCard({
                   e.stopPropagation();
                   onRemove(bookmark.questionId);
                 }}
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-semantic-text-tertiary hover:text-semantic-status-danger-text"
                 aria-label="Remove bookmark"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <svg
                   className="h-4 w-4"
@@ -62,19 +104,19 @@ export function BookmarkCard({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </Button>
+              </MotionButton>
             )}
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 flex-1">
+          </MotionDiv>
+          <h3 className="text-lg font-semibold text-semantic-text-primary group-hover:text-semantic-interactive-primary transition-colors line-clamp-2 flex-1">
             {bookmark.questionTitle}
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <MotionDiv className="mt-4 flex items-center gap-2 text-xs text-semantic-text-tertiary">
             <span>
               Saved: {format(new Date(bookmark.savedAt), "MMM d, yyyy")}
             </span>
-          </div>
+          </MotionDiv>
         </CardContent>
-      </Card>
-    </Link>
+      </MotionCard>
+    </MotionLink>
   );
 }

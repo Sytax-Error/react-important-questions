@@ -33,8 +33,10 @@ export const DeleteConfirmationDialog = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="space-y-2">
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
+          <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-500 dark:text-gray-400">
             {message}
           </DialogDescription>
         </DialogHeader>

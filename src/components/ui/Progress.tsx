@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
@@ -16,7 +17,10 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(
     return (
       <div
         ref={ref}
-        className={`w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden ${className}`}
+        className={cn(
+          "w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden",
+          className,
+        )}
         {...props}
         role="progressbar"
         aria-valuenow={value}

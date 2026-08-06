@@ -1,5 +1,6 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from './Button';
+import { Component, ErrorInfo, ReactNode } from "react";
+import { Button } from "./Button";
+import { cn } from "@/lib/utils";
 
 interface Props {
   children: ReactNode;
@@ -18,7 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
   }
 
   public render(): ReactNode {
@@ -28,11 +29,21 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex min-h-[60vh] items-center justify-center p-4">
+        <div
+          className={cn("flex min-h-[60vh] items-center justify-center p-4")}
+        >
           <div className="text-center max-w-md">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+            <div
+              className={cn(
+                "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+                "bg-danger-100 dark:bg-danger-900/30",
+              )}
+            >
               <svg
-                className="h-8 w-8 text-red-600 dark:text-red-400"
+                className={cn(
+                  "h-8 w-8",
+                  "text-danger-600 dark:text-danger-400",
+                )}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -46,18 +57,45 @@ export class ErrorBoundary extends Component<Props, State> {
                 />
               </svg>
             </div>
-            <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">Something went wrong</h2>
-            <p className="mb-6 text-gray-500 dark:text-gray-400">
-              We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
+            <h2
+              className={cn(
+                "mb-2 text-xl font-semibold",
+                "text-gray-900 dark:text-gray-100",
+              )}
+            >
+              Something went wrong
+            </h2>
+            <p className={cn("mb-6", "text-gray-500 dark:text-gray-400")}>
+              We encountered an unexpected error. Please try refreshing the page
+              or contact support if the problem persists.
             </p>
-            <details className="mb-4 text-left text-sm text-gray-500 dark:text-gray-400">
-              <summary className="cursor-pointer font-medium text-gray-700 dark:text-gray-300">Error details</summary>
-              <pre className="mt-2 p-3 overflow-auto rounded bg-gray-100 dark:bg-gray-800">
+            <details
+              className={cn(
+                "mb-4 text-left text-sm",
+                "text-gray-500 dark:text-gray-400",
+              )}
+            >
+              <summary
+                className={cn(
+                  "cursor-pointer font-medium",
+                  "text-gray-700 dark:text-gray-300",
+                )}
+              >
+                Error details
+              </summary>
+              <pre
+                className={cn(
+                  "mt-2 p-3 overflow-auto rounded",
+                  "bg-gray-100 dark:bg-gray-800",
+                )}
+              >
                 {this.state.error?.message}
                 {this.state.error?.stack}
               </pre>
             </details>
-            <Button onClick={() => window.location.reload()}>Refresh Page</Button>
+            <Button onClick={() => window.location.reload()}>
+              Refresh Page
+            </Button>
           </div>
         </div>
       );
@@ -67,13 +105,24 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+export function ErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center p-4">
+    <div className={cn("flex min-h-[60vh] items-center justify-center p-4")}>
       <div className="text-center max-w-md">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+        <div
+          className={cn(
+            "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+            "bg-danger-100 dark:bg-danger-900/30",
+          )}
+        >
           <svg
-            className="h-8 w-8 text-red-600 dark:text-red-400"
+            className={cn("h-8 w-8", "text-danger-600 dark:text-danger-400")}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -87,8 +136,18 @@ export function ErrorFallback({ error, resetErrorBoundary }: { error: Error; res
             />
           </svg>
         </div>
-        <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">Something went wrong</h2>
-        <p className="mb-6 text-gray-500 dark:text-gray-400">{error.message}</p>
+
+        <h2
+          className={cn(
+            "mb-2 text-xl font-semibold",
+            "text-gray-900 dark:text-gray-100",
+          )}
+        >
+          Something went wrong
+        </h2>
+        <p className={cn("mb-6", "text-gray-500 dark:text-gray-400")}>
+          {error.message}
+        </p>
         <Button onClick={resetErrorBoundary}>Try Again</Button>
       </div>
     </div>

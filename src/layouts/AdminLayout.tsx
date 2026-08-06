@@ -63,6 +63,14 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-primary-600 text-white rounded"
+      >
+        Skip to main content
+      </a>
+
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -193,7 +201,7 @@ export function AdminLayout() {
             </Link>
           </div>
         </header>
-        <main className="p-6">
+        <main id="main-content" className="p-6">
           <Outlet />
         </main>
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +10,58 @@ import {
   getPaginatedQuestionsAdmin,
 } from "@/features/questions/services/questionService";
 import { InterviewQuestion, Difficulty } from "@/types/questions";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const statVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<{
@@ -52,37 +105,50 @@ export function AdminDashboardPage() {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
-      </div>
+      <MotionDiv
+        initial="hidden"
+        animate="visible"
+        variants={cardVariants}
+        className="text-center py-12"
+      >
+        <p className="text-semantic-status-danger-text">{error}</p>
+      </MotionDiv>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+    <MotionDiv
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8 px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <MotionDiv variants={cardVariants}>
+        <h1 className="text-3xl font-bold text-semantic-text-primary">
           Dashboard
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-semantic-text-secondary">
           Overview of your interview questions
         </p>
-      </div>
+      </MotionDiv>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <MotionDiv
+        variants={containerVariants}
+        className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <MotionCard variants={statVariants}>
           <CardContent className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-medium text-semantic-text-secondary">
                   Total Questions
                 </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <p className="mt-1 text-3xl font-bold text-semantic-text-primary">
                   {stats?.totalQuestions || 0}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-interactive-primary/10 text-semantic-interactive-primary">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -100,20 +166,20 @@ export function AdminDashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </MotionCard>
 
-        <Card>
+        <MotionCard variants={statVariants}>
           <CardContent className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-medium text-semantic-text-secondary">
                   Published
                 </p>
-                <p className="mt-1 text-3xl font-bold text-green-600 dark:text-green-400">
+                <p className="mt-1 text-3xl font-bold text-semantic-status-success-text">
                   {stats?.publishedQuestions || 0}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-status-success-bg text-semantic-status-success-text">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -131,20 +197,20 @@ export function AdminDashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </MotionCard>
 
-        <Card>
+        <MotionCard variants={statVariants}>
           <CardContent className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-medium text-semantic-text-secondary">
                   Drafts
                 </p>
-                <p className="mt-1 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                <p className="mt-1 text-3xl font-bold text-semantic-status-warning-text">
                   {stats?.draftQuestions || 0}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-status-warning-bg text-semantic-status-warning-text">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -162,20 +228,20 @@ export function AdminDashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </MotionCard>
 
-        <Card>
+        <MotionCard variants={statVariants}>
           <CardContent className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-medium text-semantic-text-secondary">
                   Topics
                 </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <p className="mt-1 text-3xl font-bold text-semantic-text-primary">
                   {Object.keys(stats?.questionsByTopic || {}).length}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-interactive-secondary/10 text-semantic-interactive-secondary">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -193,27 +259,33 @@ export function AdminDashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
-      </div>
+        </MotionCard>
+      </MotionDiv>
 
       {/* Difficulty Breakdown */}
       {stats && (
-        <Card>
+        <MotionCard variants={cardVariants}>
           <CardHeader>
             <CardTitle className="text-lg">Questions by Difficulty</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <MotionDiv
+              variants={containerVariants}
+              className="grid gap-4 sm:grid-cols-3"
+            >
+              <MotionDiv
+                variants={rowVariants}
+                className="flex items-center justify-between p-4 bg-semantic-status-success-bg border border-semantic-status-success-border rounded-lg"
+              >
                 <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <p className="text-sm font-medium text-semantic-text-secondary">
                     Beginner
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
+                  <p className="mt-1 text-2xl font-bold text-semantic-status-success-text">
                     {stats.questionsByDifficulty.Beginner || 0}
                   </p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-status-success-bg/30 text-semantic-status-success-text">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -229,17 +301,20 @@ export function AdminDashboardPage() {
                     />
                   </svg>
                 </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              </MotionDiv>
+              <MotionDiv
+                variants={rowVariants}
+                className="flex items-center justify-between p-4 bg-semantic-status-warning-bg border border-semantic-status-warning-border rounded-lg"
+              >
                 <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <p className="text-sm font-medium text-semantic-text-secondary">
                     Intermediate
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                  <p className="mt-1 text-2xl font-bold text-semantic-status-warning-text">
                     {stats.questionsByDifficulty.Intermediate || 0}
                   </p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-status-warning-bg/30 text-semantic-status-warning-text">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -255,17 +330,20 @@ export function AdminDashboardPage() {
                     />
                   </svg>
                 </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              </MotionDiv>
+              <MotionDiv
+                variants={rowVariants}
+                className="flex items-center justify-between p-4 bg-semantic-status-danger-bg border border-semantic-status-danger-border rounded-lg"
+              >
                 <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <p className="text-sm font-medium text-semantic-text-secondary">
                     Advanced
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
+                  <p className="mt-1 text-2xl font-bold text-semantic-status-danger-text">
                     {stats.questionsByDifficulty.Advanced || 0}
                   </p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-semantic-status-danger-bg/30 text-semantic-status-danger-text">
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -281,136 +359,160 @@ export function AdminDashboardPage() {
                     />
                   </svg>
                 </div>
-              </div>
-            </div>
+              </MotionDiv>
+            </MotionDiv>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Quick Actions */}
-      <Card>
+      <MotionCard variants={cardVariants}>
         <CardHeader>
           <CardTitle className="text-lg">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/admin/questions/new">
+          <MotionDiv
+            variants={containerVariants}
+            className="flex flex-wrap gap-4"
+          >
+            <MotionLink
+              to="/admin/questions/new"
+              variants={statVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <Button>Add New Question</Button>
-            </Link>
-            <Link to="/admin/questions">
+            </MotionLink>
+            <MotionLink
+              to="/admin/questions"
+              variants={statVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <Button variant="outline">Manage Questions</Button>
-            </Link>
-            <Link to="/">
+            </MotionLink>
+            <MotionLink
+              to="/"
+              variants={statVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <Button variant="ghost">View Site</Button>
-            </Link>
-          </div>
+            </MotionLink>
+          </MotionDiv>
         </CardContent>
-      </Card>
+      </MotionCard>
 
       {/* Recent Questions */}
-      <Card>
+      <MotionCard variants={cardVariants}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Recent Questions</CardTitle>
-          <Link
+          <MotionLink
             to="/admin/questions"
-            className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
+            whileHover={{ x: 4 }}
           >
             View All →
-          </Link>
+          </MotionLink>
         </CardHeader>
         <CardContent>
           {recentQuestions.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">
+            <MotionDiv variants={cardVariants} className="text-center py-8">
+              <p className="text-semantic-text-secondary">
                 No questions yet.{" "}
                 <Link
                   to="/admin/questions/new"
-                  className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                  className="text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
                 >
                   Create one
                 </Link>
               </p>
-            </div>
+            </MotionDiv>
           ) : (
-            <div className="overflow-x-auto">
+            <MotionDiv variants={containerVariants} className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <tr className="border-b border-semantic-border-primary">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Question
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Topic
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Difficulty
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Status
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Updated
                     </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <th className="text-right py-3 px-4 text-sm font-medium text-semantic-text-secondary">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentQuestions.map((question) => (
-                    <tr
+                    <MotionDiv
                       key={question.id}
-                      className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      variants={rowVariants}
+                      className="border-b border-semantic-border-tertiary hover:bg-semantic-bg-tertiary/50 transition-colors"
                     >
-                      <td className="py-3 px-4">
-                        <Link
-                          to={`/admin/questions/${question.id}/edit`}
-                          className="font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 max-w-xs truncate block"
-                        >
-                          {question.question}
-                        </Link>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
-                        {question.topic}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={
-                            question.difficulty === "Beginner"
-                              ? "success"
-                              : question.difficulty === "Intermediate"
-                                ? "warning"
-                                : "danger"
-                          }
-                          size="sm"
-                        >
-                          {question.difficulty}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4">
-                        <StatusBadge
-                          status={question.isPublished ? "published" : "draft"}
-                        />
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {question.updatedAt.toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <Link
-                          to={`/admin/questions/${question.id}/edit`}
-                          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                        >
-                          Edit
-                        </Link>
-                      </td>
-                    </tr>
+                      <tr>
+                        <td className="py-3 px-4">
+                          <Link
+                            to={`/admin/questions/${question.id}/edit`}
+                            className="font-medium text-semantic-text-primary hover:text-semantic-interactive-primary max-w-xs truncate block"
+                          >
+                            {question.question}
+                          </Link>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-semantic-text-secondary">
+                          {question.topic}
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge
+                            variant={
+                              question.difficulty === "Beginner"
+                                ? "success"
+                                : question.difficulty === "Intermediate"
+                                  ? "warning"
+                                  : "danger"
+                            }
+                            size="sm"
+                          >
+                            {question.difficulty}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4">
+                          <StatusBadge
+                            status={
+                              question.isPublished ? "published" : "draft"
+                            }
+                          />
+                        </td>
+                        <td className="py-3 px-4 text-sm text-semantic-text-tertiary">
+                          {question.updatedAt.toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <Link
+                            to={`/admin/questions/${question.id}/edit`}
+                            className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                      </tr>
+                    </MotionDiv>
                   ))}
                 </tbody>
               </table>
-            </div>
+            </MotionDiv>
           )}
         </CardContent>
-      </Card>
-    </div>
+      </MotionCard>
+    </MotionDiv>
   );
 }

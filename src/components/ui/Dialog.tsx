@@ -160,33 +160,26 @@ const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
       }
     };
 
-    const dialogStyle = `
-      dialog::backdrop { background-color: rgba(0, 0, 0, 0.5); }
-    `;
-
     return (
-      <>
-        <style>{dialogStyle}</style>
-        <dialog
-          ref={mergedRef}
+      <dialog
+        ref={mergedRef}
+        className={cn(
+          "border-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-0",
+          className,
+        )}
+        onClose={handleClose}
+        onClick={handleBackdropClick}
+        {...props}
+      >
+        <div
           className={cn(
-            "border-none bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 p-0",
-            className,
+            "rounded-lg shadow-lg w-full mx-auto p-6",
+            "animate-zoom-in duration-200",
           )}
-          onClose={handleClose}
-          onClick={handleBackdropClick}
-          {...props}
         >
-          <div
-            className={cn(
-              "rounded-lg shadow-lg w-full mx-auto p-6",
-              "animate-in fade-in-0 zoom-in-95 duration-200",
-            )}
-          >
-            {children}
-          </div>
-        </dialog>
-      </>
+          {children}
+        </div>
+      </dialog>
     );
   },
 );
@@ -195,7 +188,7 @@ Dialog.displayName = "Dialog";
 // DialogContent - wrapper for dialog content
 const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
   ({ children, className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6", "max-w-lg", className)} {...props}>
+    <div ref={ref} className={cn("max-w-lg", className)} {...props}>
       {children}
     </div>
   ),
@@ -225,7 +218,7 @@ const DialogTitle = React.forwardRef<HTMLHeadingElement, DialogTitleProps>(
     <h2
       ref={ref}
       className={cn(
-        "text-lg font-semibold leading-none tracking-tight",
+        "text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100",
         className,
       )}
       {...props}
@@ -243,7 +236,7 @@ const DialogDescription = React.forwardRef<
 >(({ children, className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-gray-500 dark:text-gray-400", className)}
     {...props}
   >
     {children}
@@ -276,7 +269,7 @@ const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
       type="button"
       data-dialog-close
       className={cn(
-        "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       onClick={onClick}
@@ -317,7 +310,7 @@ const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerProps>(
         ref={ref}
         type="button"
         className={cn(
-          "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           className,
         )}
         onClick={onClick}

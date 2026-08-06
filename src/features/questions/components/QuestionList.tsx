@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
   StatusBadge,
@@ -7,6 +8,7 @@ import {
   Badge,
 } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import {
@@ -26,6 +28,71 @@ import { InterviewQuestion } from "@/types/questions";
 import { useAuth } from "@/features/auth";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionTr = motion.tr;
+const MotionButton = motion.button;
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.3,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const statVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const fieldVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function AdminQuestionList() {
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
@@ -159,79 +226,96 @@ export function AdminQuestionList() {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
-      </div>
+      <MotionDiv
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="text-center py-12"
+      >
+        <p className="text-semantic-status-danger-text">{error}</p>
+      </MotionDiv>
     );
   }
 
+  const uniqueTopics = [...new Set(questions.map((q) => q.topic))].sort();
+
   return (
     <>
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              Manage Questions
-            </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Create, edit, publish, and manage interview questions
-            </p>
+      <MotionDiv
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="space-y-8"
+      >
+        <MotionDiv variants={cardVariants}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-semantic-text-primary">
+                Manage Questions
+              </h1>
+              <p className="mt-2 text-semantic-text-secondary">
+                Create, edit, publish, and manage interview questions
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              {stats && (
+                <div className="text-sm text-semantic-text-tertiary">
+                  {stats.totalQuestions} questions • {stats.publishedQuestions}{" "}
+                  published • {stats.draftQuestions} drafts
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            {stats && (
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {stats.totalQuestions} questions • {stats.publishedQuestions}{" "}
-                published • {stats.draftQuestions} drafts
-              </div>
-            )}
-          </div>
-        </div>
+        </MotionDiv>
 
         {/* Stats Overview */}
         {stats && (
-          <Card>
+          <MotionCard variants={cardVariants}>
             <CardContent className="grid gap-6 sm:grid-cols-4 text-center py-6">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <MotionDiv variants={statVariants}>
+                <p className="text-sm font-medium text-semantic-text-tertiary">
                   Total Questions
                 </p>
-                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <p className="mt-1 text-2xl font-bold text-semantic-text-primary">
                   {stats.totalQuestions}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              </MotionDiv>
+              <MotionDiv variants={statVariants}>
+                <p className="text-sm font-medium text-semantic-text-tertiary">
                   Published
                 </p>
-                <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
+                <p className="mt-1 text-2xl font-bold text-semantic-status-success-text">
                   {stats.publishedQuestions}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              </MotionDiv>
+              <MotionDiv variants={statVariants}>
+                <p className="text-sm font-medium text-semantic-text-tertiary">
                   Drafts
                 </p>
-                <p className="mt-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                <p className="mt-1 text-2xl font-bold text-semantic-status-warning-text">
                   {stats.draftQuestions}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              </MotionDiv>
+              <MotionDiv variants={statVariants}>
+                <p className="text-sm font-medium text-semantic-text-tertiary">
                   Topics
                 </p>
-                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <p className="mt-1 text-2xl font-bold text-semantic-text-primary">
                   {Object.keys(stats.questionsByTopic).length}
                 </p>
-              </div>
+              </MotionDiv>
             </CardContent>
-          </Card>
+          </MotionCard>
         )}
 
         {/* Filters */}
-        <Card>
+        <MotionCard variants={cardVariants}>
           <CardContent className="pt-6">
-            <div className="grid gap-4 sm:grid-cols-4">
-              <div className="sm:col-span-2">
+            <MotionDiv
+              variants={containerVariants}
+              className="grid gap-4 sm:grid-cols-4"
+            >
+              <MotionDiv variants={fieldVariants} className="sm:col-span-2">
                 <Input
                   label="Search"
                   type="search"
@@ -255,38 +339,36 @@ export function AdminQuestionList() {
                     </svg>
                   }
                 />
-              </div>
-              <div>
+              </MotionDiv>
+              <MotionDiv variants={fieldVariants}>
                 <label
                   htmlFor="topic-filter"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Topic
                 </label>
-                <select
+                <Select
                   id="topic-filter"
                   value={topicFilter}
                   onChange={(e) => setTopicFilter(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="">All Topics</option>
-                  {[...new Set(questions.map((q) => q.topic))]
-                    .sort()
-                    .map((topic) => (
-                      <option key={topic} value={topic}>
-                        {topic}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
+                  options={[
+                    { value: "", label: "All Topics" },
+                    ...uniqueTopics.map((topic) => ({
+                      value: topic,
+                      label: topic,
+                    })),
+                  ]}
+                  placeholder="All Topics"
+                />
+              </MotionDiv>
+              <MotionDiv variants={fieldVariants}>
                 <label
                   htmlFor="difficulty-filter"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Difficulty
                 </label>
-                <select
+                <Select
                   id="difficulty-filter"
                   value={difficultyFilter}
                   onChange={(e) =>
@@ -298,22 +380,23 @@ export function AdminQuestionList() {
                         | "",
                     )
                   }
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="">All Difficulties</option>
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                </select>
-              </div>
-              <div>
+                  options={[
+                    { value: "", label: "All Difficulties" },
+                    { value: "Beginner", label: "Beginner" },
+                    { value: "Intermediate", label: "Intermediate" },
+                    { value: "Advanced", label: "Advanced" },
+                  ]}
+                  placeholder="All Difficulties"
+                />
+              </MotionDiv>
+              <MotionDiv variants={fieldVariants}>
                 <label
                   htmlFor="status-filter"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-semantic-text-secondary mb-2"
                 >
                   Status
                 </label>
-                <select
+                <Select
                   id="status-filter"
                   value={statusFilter}
                   onChange={(e) =>
@@ -321,24 +404,30 @@ export function AdminQuestionList() {
                       e.target.value as "all" | "published" | "draft",
                     )
                   }
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="all">All Status</option>
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
-                </select>
-              </div>
-            </div>
+                  options={[
+                    { value: "all", label: "All Status" },
+                    { value: "published", label: "Published" },
+                    { value: "draft", label: "Draft" },
+                  ]}
+                  placeholder="All Status"
+                />
+              </MotionDiv>
+            </MotionDiv>
           </CardContent>
-        </Card>
+        </MotionCard>
 
         {/* Questions Table */}
-        <Card>
+        <MotionCard variants={cardVariants}>
           <CardContent>
             {filteredQuestions().length === 0 ? (
-              <div className="text-center py-12">
+              <MotionDiv
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+                className="text-center py-12"
+              >
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
+                  className="mx-auto h-12 w-12 text-semantic-text-tertiary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -351,49 +440,54 @@ export function AdminQuestionList() {
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
                   />
                 </svg>
-                <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="mt-4 text-lg font-medium text-semantic-text-primary">
                   No questions found
                 </h3>
-                <p className="mt-2 text-gray-500 dark:text-gray-400">
+                <p className="mt-2 text-semantic-text-tertiary">
                   Try adjusting your filters or create a new question.
                 </p>
-              </div>
+              </MotionDiv>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <MotionDiv
+                  variants={containerVariants}
+                  className="overflow-x-auto"
+                >
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <tr className="border-b border-semantic-border-primary">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Question
                         </th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Topic
                         </th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Difficulty
                         </th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Status
                         </th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Updated
                         </th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <th className="text-right py-3 px-4 text-sm font-medium text-semantic-text-tertiary">
                           Actions
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredQuestions().map((question) => (
-                        <tr
+                        <MotionTr
                           key={question.id}
-                          className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          variants={rowVariants}
+                          className="border-b border-semantic-border-tertiary hover:bg-semantic-bg-tertiary/50 transition-colors"
+                          whileHover={{ x: 4 }}
                         >
                           <td className="py-3 px-4">
                             <a
                               href={`/admin/questions/${question.id}/edit`}
-                              className="font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 max-w-xs truncate block"
+                              className="font-medium text-semantic-text-primary hover:text-semantic-interactive-primary transition-colors max-w-xs truncate block"
                             >
                               {question.question}
                             </a>
@@ -411,64 +505,75 @@ export function AdminQuestionList() {
                               }
                             />
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
+                          <td className="py-3 px-4 text-sm text-semantic-text-tertiary">
                             {question.updatedAt.toLocaleDateString()}
                           </td>
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <a
                                 href={`/admin/questions/${question.id}/edit`}
-                                className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                                className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover transition-colors"
                               >
                                 Edit
                               </a>
-                              <button
+                              <MotionButton
                                 onClick={() => handlePreview(question)}
-                                className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                className="text-sm font-medium text-semantic-interactive-secondary hover:text-semantic-interactive-secondary-hover transition-colors"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                               >
                                 Preview
-                              </button>
+                              </MotionButton>
                               {question.isPublished ? (
-                                <button
+                                <MotionButton
                                   onClick={() => handleUnpublish(question)}
-                                  className="text-sm font-medium text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300"
+                                  className="text-sm font-medium text-semantic-status-warning-text hover:text-semantic-status-warning-text-hover transition-colors"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
                                 >
                                   Unpublish
-                                </button>
+                                </MotionButton>
                               ) : (
-                                <button
+                                <MotionButton
                                   onClick={() => handlePublish(question)}
-                                  className="text-sm font-medium text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                                  className="text-sm font-medium text-semantic-status-success-text hover:text-semantic-status-success-text-hover transition-colors"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
                                 >
                                   Publish
-                                </button>
+                                </MotionButton>
                               )}
-                              <button
+                              <MotionButton
                                 onClick={() => handleDeleteConfirm(question)}
-                                className="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                className="text-sm font-medium text-semantic-status-danger-text hover:text-semantic-status-danger-text-hover transition-colors"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                               >
                                 Delete
-                              </button>
+                              </MotionButton>
                             </div>
                           </td>
-                        </tr>
+                        </MotionTr>
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </MotionDiv>
 
                 {/* Pagination placeholder - would need cursor-based pagination for large datasets */}
-                <div className="mt-6 flex items-center justify-between">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                <MotionDiv
+                  variants={cardVariants}
+                  className="mt-6 flex items-center justify-between"
+                >
+                  <p className="text-sm text-semantic-text-tertiary">
                     Showing {filteredQuestions().length} of {questions.length}{" "}
                     questions
                   </p>
-                </div>
+                </MotionDiv>
               </>
             )}
           </CardContent>
-        </Card>
-      </div>
+        </MotionCard>
+      </MotionDiv>
       <DeleteConfirmationDialog
         isOpen={deleteDialog.open}
         onClose={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
@@ -480,14 +585,22 @@ export function AdminQuestionList() {
       >
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl">
+            <DialogTitle className="text-xl text-semantic-text-primary">
               {previewDialog.question?.question}
             </DialogTitle>
           </DialogHeader>
           {previewDialog.question && (
-            <div className="space-y-6 py-4">
+            <MotionDiv
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="space-y-6 py-4"
+            >
               {/* Badges */}
-              <div className="flex flex-wrap items-center gap-2">
+              <MotionDiv
+                variants={fieldVariants}
+                className="flex flex-wrap items-center gap-2"
+              >
                 <TopicBadge topic={previewDialog.question.topic} />
                 <DifficultyBadge
                   difficulty={previewDialog.question.difficulty}
@@ -502,10 +615,13 @@ export function AdminQuestionList() {
                     {previewDialog.question.language}
                   </Badge>
                 )}
-              </div>
+              </MotionDiv>
 
               {/* Metadata */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <MotionDiv
+                variants={fieldVariants}
+                className="flex flex-wrap items-center gap-4 text-sm text-semantic-text-tertiary"
+              >
                 <span>Category: {previewDialog.question.category}</span>
                 <span>
                   Created:{" "}
@@ -515,38 +631,45 @@ export function AdminQuestionList() {
                   Updated:{" "}
                   {previewDialog.question.updatedAt.toLocaleDateString()}
                 </span>
-              </div>
+              </MotionDiv>
 
               {/* Tags */}
               {previewDialog.question.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <MotionDiv
+                  variants={fieldVariants}
+                  className="flex flex-wrap gap-2"
+                >
                   {previewDialog.question.tags.map((tag) => (
                     <Badge key={tag} variant="outline" size="sm">
                       {tag}
                     </Badge>
                   ))}
-                </div>
+                </MotionDiv>
               )}
 
               {/* Short Answer */}
-              <Card>
+              <MotionCard variants={cardVariants}>
                 <CardHeader>
-                  <CardTitle className="text-lg">Short Answer</CardTitle>
+                  <CardTitle className="text-lg text-semantic-text-primary">
+                    Short Answer
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                  <div className="prose prose-gray dark:prose-invert max-w-none text-semantic-text-secondary">
                     {previewDialog.question.shortAnswer}
                   </div>
                 </CardContent>
-              </Card>
+              </MotionCard>
 
               {/* Detailed Answer */}
-              <Card>
+              <MotionCard variants={cardVariants}>
                 <CardHeader>
-                  <CardTitle className="text-lg">Detailed Answer</CardTitle>
+                  <CardTitle className="text-lg text-semantic-text-primary">
+                    Detailed Answer
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                  <div className="prose prose-gray dark:prose-invert max-w-none text-semantic-text-secondary">
                     {previewDialog.question.detailedAnswer
                       .split("\n")
                       .map((paragraph, i) => (
@@ -554,13 +677,15 @@ export function AdminQuestionList() {
                       ))}
                   </div>
                 </CardContent>
-              </Card>
+              </MotionCard>
 
               {/* Code Example */}
               {previewDialog.question.code && (
-                <Card>
+                <MotionCard variants={cardVariants}>
                   <CardHeader>
-                    <CardTitle className="text-lg">Code Example</CardTitle>
+                    <CardTitle className="text-lg text-semantic-text-primary">
+                      Code Example
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <SyntaxHighlighter
@@ -579,14 +704,14 @@ export function AdminQuestionList() {
                       {previewDialog.question.code}
                     </SyntaxHighlighter>
                   </CardContent>
-                </Card>
+                </MotionCard>
               )}
 
               {/* Important Points */}
               {previewDialog.question.importantPoints.length > 0 && (
-                <Card>
+                <MotionCard variants={cardVariants}>
                   <CardHeader>
-                    <CardTitle className="text-lg">
+                    <CardTitle className="text-lg text-semantic-text-primary">
                       Important Interview Points
                     </CardTitle>
                   </CardHeader>
@@ -594,9 +719,12 @@ export function AdminQuestionList() {
                     <ul className="space-y-2">
                       {previewDialog.question.importantPoints.map(
                         (point, i) => (
-                          <li key={i} className="flex items-start gap-3">
+                          <li
+                            key={i}
+                            className="flex items-start gap-3 text-semantic-text-secondary"
+                          >
                             <svg
-                              className="h-5 w-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5"
+                              className="h-5 w-5 text-semantic-interactive-primary flex-shrink-0 mt-0.5"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -609,40 +737,33 @@ export function AdminQuestionList() {
                                 d="M5 13l4 4L19 7"
                               />
                             </svg>
-                            <span className="text-gray-700 dark:text-gray-300">
-                              {point}
-                            </span>
+                            <span>{point}</span>
                           </li>
                         ),
                       )}
                     </ul>
                   </CardContent>
-                </Card>
+                </MotionCard>
               )}
 
               {/* Follow-up Questions */}
               {previewDialog.question.followUpQuestions.length > 0 && (
-                <Card>
+                <MotionCard variants={cardVariants}>
                   <CardHeader>
-                    <CardTitle className="text-lg">
+                    <CardTitle className="text-lg text-semantic-text-primary">
                       Follow-up Questions
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ol className="space-y-2 list-decimal list-inside">
+                    <ol className="space-y-2 list-decimal list-inside text-semantic-text-secondary">
                       {previewDialog.question.followUpQuestions.map((q, i) => (
-                        <li
-                          key={i}
-                          className="text-gray-700 dark:text-gray-300"
-                        >
-                          {q}
-                        </li>
+                        <li key={i}>{q}</li>
                       ))}
                     </ol>
                   </CardContent>
-                </Card>
+                </MotionCard>
               )}
-            </div>
+            </MotionDiv>
           )}
         </DialogContent>
       </Dialog>

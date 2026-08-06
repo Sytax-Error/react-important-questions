@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -44,6 +45,59 @@ function withTimeout<T>(
     ),
   ]);
 }
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function QuestionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -149,11 +203,16 @@ export function QuestionDetailPage() {
 
   if (error || !question) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-        <Card>
+      <MotionDiv
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="max-w-4xl mx-auto px-4 py-12 text-center"
+      >
+        <MotionCard className="bg-semantic-bg-primary border-semantic-border-primary">
           <CardContent className="py-12">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-semantic-text-tertiary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -166,16 +225,18 @@ export function QuestionDetailPage() {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="mt-4 text-xl font-semibold text-semantic-text-primary">
               Question Not Found
             </h2>
-            <p className="mt-2 text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-semantic-text-secondary">
               {error || "The question you are looking for does not exist."}
             </p>
             <div className="mt-6">
-              <Link
+              <MotionLink
                 to="/questions"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 dark:text-primary-400 dark:bg-primary-900/30 dark:hover:bg-primary-900/50"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-semantic-interactive-primary bg-semantic-interactive-primary/10 rounded-lg hover:bg-semantic-interactive-primary/20 dark:hover:bg-semantic-interactive-primary/30"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <svg
                   className="mr-2 h-4 w-4"
@@ -192,27 +253,34 @@ export function QuestionDetailPage() {
                   />
                 </svg>
                 Back to Questions
-              </Link>
+              </MotionLink>
             </div>
           </CardContent>
-        </Card>
-      </div>
+        </MotionCard>
+      </MotionDiv>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <MotionDiv
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="max-w-4xl mx-auto px-4 py-8 space-y-8"
+    >
       {/* Header */}
-      <div>
+      <MotionDiv variants={headerVariants}>
         <nav className="mb-6" aria-label="Breadcrumb">
-          <ol className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+          <ol className="flex items-center space-x-2 text-sm text-semantic-text-tertiary">
             <li>
-              <Link
+              <MotionLink
                 to="/"
-                className="hover:text-primary-600 dark:hover:text-primary-400"
+                className="hover:text-semantic-interactive-primary"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Home
-              </Link>
+              </MotionLink>
             </li>
             <li>
               <svg
@@ -231,12 +299,14 @@ export function QuestionDetailPage() {
               </svg>
             </li>
             <li>
-              <Link
+              <MotionLink
                 to="/questions"
-                className="hover:text-primary-600 dark:hover:text-primary-400"
+                className="hover:text-semantic-interactive-primary"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Questions
-              </Link>
+              </MotionLink>
             </li>
             <li>
               <svg
@@ -255,12 +325,14 @@ export function QuestionDetailPage() {
               </svg>
             </li>
             <li>
-              <Link
+              <MotionLink
                 to={`/topics/${question.topic}`}
-                className="hover:text-primary-600 dark:hover:text-primary-400"
+                className="hover:text-semantic-interactive-primary"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 {question.topic}
-              </Link>
+              </MotionLink>
             </li>
             <li>
               <svg
@@ -279,7 +351,7 @@ export function QuestionDetailPage() {
               </svg>
             </li>
             <li
-              className="text-gray-900 dark:text-gray-100 truncate max-w-[200px]"
+              className="text-semantic-text-primary truncate max-w-[200px]"
               aria-current="page"
             >
               {question.question}
@@ -293,20 +365,23 @@ export function QuestionDetailPage() {
           <StatusBadge status={question.isPublished ? "published" : "draft"} />
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-3xl font-bold text-semantic-text-primary">
           {question.question}
         </h1>
 
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-semantic-text-tertiary">
           <span>Category: {question.category}</span>
           {question.language && <span>Language: {question.language}</span>}
           <span>Created: {format(question.createdAt, "MMM d, yyyy")}</span>
           <span>Updated: {format(question.updatedAt, "MMM d, yyyy")}</span>
         </div>
-      </div>
+      </MotionDiv>
 
       {/* Tags & Share & Bookmark */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <MotionDiv
+        variants={sectionVariants}
+        className="flex flex-wrap items-center justify-between gap-4"
+      >
         <div className="flex flex-wrap gap-2">
           {question.tags.map((tag) => (
             <Badge key={tag} variant="outline" size="sm">
@@ -317,11 +392,13 @@ export function QuestionDetailPage() {
         <div className="flex items-center gap-2">
           <BookmarkButton question={question} size="sm" showLabel />
           <CompletedButton question={question} size="sm" showLabel />
-          <Button
+          <MotionButton
             variant="outline"
             size="sm"
             onClick={handleShare}
             className="gap-1"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <svg
               className="h-4 w-4"
@@ -338,51 +415,68 @@ export function QuestionDetailPage() {
               />
             </svg>
             Share
-          </Button>
+          </MotionButton>
         </div>
-      </div>
+      </MotionDiv>
 
       {/* Short Answer */}
-      <Card>
+      <MotionCard
+        variants={sectionVariants}
+        className="bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardHeader>
-          <CardTitle className="text-lg">Short Answer</CardTitle>
+          <CardTitle className="text-lg text-semantic-text-primary">
+            Short Answer
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="prose prose-gray dark:prose-invert max-w-none">
+          <div className="prose prose-gray dark:prose-invert max-w-none text-semantic-text-secondary">
             {question.shortAnswer}
           </div>
         </CardContent>
-      </Card>
+      </MotionCard>
 
       {/* Detailed Answer */}
-      <Card>
+      <MotionCard
+        variants={sectionVariants}
+        className="bg-semantic-bg-primary border-semantic-border-primary"
+      >
         <CardHeader>
-          <CardTitle className="text-lg">Detailed Answer</CardTitle>
+          <CardTitle className="text-lg text-semantic-text-primary">
+            Detailed Answer
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="prose prose-gray dark:prose-invert max-w-none">
+          <div className="prose prose-gray dark:prose-invert max-w-none text-semantic-text-secondary">
             {question.detailedAnswer}
           </div>
         </CardContent>
-      </Card>
+      </MotionCard>
 
       {/* Code Example */}
       {question.code && (
-        <Card>
+        <MotionCard
+          variants={sectionVariants}
+          className="bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Code Example</CardTitle>
+            <CardTitle className="text-lg text-semantic-text-primary">
+              Code Example
+            </CardTitle>
             <div className="flex items-center gap-2">
               {question.language && (
                 <Badge variant="outline" size="sm">
                   {question.language}
                 </Badge>
               )}
-              <Button
+              <MotionButton
                 variant="ghost"
                 size="sm"
                 onClick={handleCopyCode}
                 className="gap-1"
                 aria-label={copied ? "Copied!" : "Copy code"}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <svg
                   className="h-4 w-4"
@@ -399,7 +493,7 @@ export function QuestionDetailPage() {
                   />
                 </svg>
                 {copied ? "Copied!" : "Copy"}
-              </Button>
+              </MotionButton>
             </div>
           </CardHeader>
           <CardContent>
@@ -417,23 +511,30 @@ export function QuestionDetailPage() {
               {question.code}
             </SyntaxHighlighter>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Important Points */}
       {question.importantPoints.length > 0 && (
-        <Card>
+        <MotionCard
+          variants={sectionVariants}
+          className="bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardHeader>
-            <CardTitle className="text-lg">
+            <CardTitle className="text-lg text-semantic-text-primary">
               Important Interview Points
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
               {question.importantPoints.map((point, index) => (
-                <li key={index} className="flex items-start gap-3">
+                <MotionDiv
+                  key={index}
+                  variants={itemVariants}
+                  className="flex items-start gap-3"
+                >
                   <svg
-                    className="h-5 w-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5"
+                    className="h-5 w-5 text-semantic-status-success flex-shrink-0 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -446,113 +547,137 @@ export function QuestionDetailPage() {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {point}
-                  </span>
-                </li>
+                  <span className="text-semantic-text-secondary">{point}</span>
+                </MotionDiv>
               ))}
             </ul>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Follow-up Questions */}
       {question.followUpQuestions.length > 0 && (
-        <Card>
+        <MotionCard
+          variants={sectionVariants}
+          className="bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardHeader>
-            <CardTitle className="text-lg">Follow-up Questions</CardTitle>
+            <CardTitle className="text-lg text-semantic-text-primary">
+              Follow-up Questions
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ol className="space-y-2 list-decimal list-inside">
               {question.followUpQuestions.map((q, index) => (
-                <li key={index} className="text-gray-700 dark:text-gray-300">
+                <MotionDiv
+                  key={index}
+                  variants={itemVariants}
+                  className="text-semantic-text-secondary"
+                >
                   {q}
-                </li>
+                </MotionDiv>
               ))}
             </ol>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Related Questions */}
       {relatedQuestions.length > 0 && (
-        <Card>
+        <MotionCard
+          variants={sectionVariants}
+          className="bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardHeader>
-            <CardTitle className="text-lg">Related Questions</CardTitle>
+            <CardTitle className="text-lg text-semantic-text-primary">
+              Related Questions
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <MotionDiv variants={containerVariants} className="space-y-3">
               {relatedQuestions.map((q) => (
-                <Link
+                <MotionLink
                   key={q.id}
                   to={`/questions/${q.slug}`}
-                  className="block p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  variants={itemVariants}
+                  className="block p-3 rounded-lg border border-semantic-border-primary hover:bg-semantic-interactive-hover dark:hover:bg-semantic-bg-tertiary transition-colors"
+                  whileHover={{ x: 4 }}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <TopicBadge topic={q.topic} size="sm" />
                     <DifficultyBadge difficulty={q.difficulty} size="sm" />
                   </div>
-                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                  <p className="font-medium text-semantic-text-primary line-clamp-2">
                     {q.question}
                   </p>
-                </Link>
+                </MotionLink>
               ))}
-            </div>
+            </MotionDiv>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Previous/Next Navigation */}
       {(adjacentQuestions.previous || adjacentQuestions.next) && (
-        <Card>
+        <MotionCard
+          variants={sectionVariants}
+          className="bg-semantic-bg-primary border-semantic-border-primary"
+        >
           <CardContent className="pt-0">
             <div className="flex items-center justify-between">
               {adjacentQuestions.previous && (
-                <Link
+                <MotionLink
                   to={`/questions/${adjacentQuestions.previous.slug}`}
                   className="flex-1 pr-4"
+                  whileHover={{ x: -4 }}
                 >
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  <div className="text-xs text-semantic-text-tertiary mb-1">
                     Previous Question
                   </div>
-                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                  <p className="font-medium text-semantic-text-primary line-clamp-2">
                     {adjacentQuestions.previous.question}
                   </p>
-                </Link>
+                </MotionLink>
               )}
               {adjacentQuestions.next && (
-                <Link
+                <MotionLink
                   to={`/questions/${adjacentQuestions.next.slug}`}
                   className="flex-1 pl-4 text-right"
+                  whileHover={{ x: 4 }}
                 >
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  <div className="text-xs text-semantic-text-tertiary mb-1">
                     Next Question
                   </div>
-                  <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                  <p className="font-medium text-semantic-text-primary line-clamp-2">
                     {adjacentQuestions.next.question}
                   </p>
-                </Link>
+                </MotionLink>
               )}
             </div>
           </CardContent>
-        </Card>
+        </MotionCard>
       )}
 
       {/* Footer Navigation */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-        <Link
+      <MotionDiv
+        variants={sectionVariants}
+        className="flex items-center justify-between pt-4 border-t border-semantic-border-primary"
+      >
+        <MotionLink
           to="/questions"
-          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
+          whileHover={{ x: -4 }}
         >
           ← Back to Questions
-        </Link>
-        <Link
+        </MotionLink>
+        <MotionLink
           to={`/topics/${question.topic}`}
-          className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          className="text-sm font-medium text-semantic-interactive-primary hover:text-semantic-interactive-primary-hover"
+          whileHover={{ x: 4 }}
         >
           Browse {question.topic} →
-        </Link>
-      </div>
-    </div>
+        </MotionLink>
+      </MotionDiv>
+    </MotionDiv>
   );
 }

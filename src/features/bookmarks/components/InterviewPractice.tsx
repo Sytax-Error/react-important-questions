@@ -1,10 +1,52 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { TopicBadge, DifficultyBadge } from "@/components/ui/Badge";
 import { useLearning } from "../hooks/useLearning";
 import { InterviewQuestion } from "@/types/questions";
 import { Link } from "react-router-dom";
+
+const MotionCard = motion(Card);
+const MotionDiv = motion.div;
+const MotionLink = motion(Link);
+const MotionButton = motion(Button);
+
+// Framer Motion variants for consistent animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const questionVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 interface InterviewPracticeProps {
   questions: InterviewQuestion[];
@@ -50,26 +92,43 @@ export function InterviewPractice({
 
   if (questions.length === 0) {
     return (
-      <Card className={className}>
+      <MotionCard
+        initial="hidden"
+        animate="visible"
+        variants={cardVariants}
+        className={className}
+      >
         <CardContent className="p-6 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-semantic-text-secondary">
             No questions available for practice
           </p>
         </CardContent>
-      </Card>
+      </MotionCard>
     );
   }
 
   return (
-    <Card className={className}>
+    <MotionCard
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className={className}
+    >
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Interview Practice Mode</CardTitle>
-          <Button
+        <MotionDiv
+          variants={cardVariants}
+          className="flex items-center justify-between"
+        >
+          <CardTitle className="text-lg text-semantic-text-primary">
+            Interview Practice Mode
+          </CardTitle>
+          <MotionButton
             variant="outline"
             size="sm"
             onClick={handleGenerate}
             disabled={isGenerating}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {isGenerating ? (
               <svg
@@ -109,27 +168,37 @@ export function InterviewPractice({
                 New Set
               </>
             )}
-          </Button>
-        </div>
+          </MotionButton>
+        </MotionDiv>
       </CardHeader>
       <CardContent className="space-y-4">
         {practiceQuestions.length > 0 && (
-          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+          <MotionDiv
+            variants={cardVariants}
+            className="flex items-center justify-between text-sm text-semantic-text-tertiary"
+          >
             <span>
               Question {currentIndex + 1} of {practiceQuestions.length}
             </span>
-            <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary-600 dark:bg-primary-500 transition-all duration-300"
+            <div className="w-32 h-2 bg-semantic-bg-tertiary rounded-full overflow-hidden">
+              <MotionDiv
+                className="h-full bg-semantic-interactive-primary transition-all duration-300"
                 style={{ width: `${progress}%` }}
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
               />
             </div>
-          </div>
+          </MotionDiv>
         )}
 
         {currentQuestion ? (
-          <Link to={`/questions/${currentQuestion.slug}`} className="block">
-            <div className="flex items-center gap-2 mb-3">
+          <MotionLink
+            to={`/questions/${currentQuestion.slug}`}
+            className="block"
+            variants={questionVariants}
+            whileHover={{ x: 4 }}
+          >
+            <MotionDiv className="flex items-center gap-2 mb-3">
               <TopicBadge topic={currentQuestion.topic} size="sm" />
               <DifficultyBadge
                 difficulty={
@@ -140,20 +209,25 @@ export function InterviewPractice({
                 }
                 size="sm"
               />
-            </div>
-            <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors line-clamp-2 mb-4">
+            </MotionDiv>
+            <h4 className="text-lg font-medium text-semantic-text-primary hover:text-semantic-interactive-primary transition-colors line-clamp-2 mb-4">
               {currentQuestion.question}
             </h4>
-            <div className="flex items-center justify-between">
-              <Button
+            <MotionDiv
+              variants={containerVariants}
+              className="flex items-center justify-between"
+            >
+              <MotionButton
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
                 disabled={currentIndex === 0}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Previous
-              </Button>
-              <Button
+              </MotionButton>
+              <MotionButton
                 variant="primary"
                 size="sm"
                 onClick={() =>
@@ -162,22 +236,34 @@ export function InterviewPractice({
                   )
                 }
                 disabled={currentIndex === practiceQuestions.length - 1}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Next
-              </Button>
-            </div>
-          </Link>
+              </MotionButton>
+            </MotionDiv>
+          </MotionLink>
         ) : (
-          <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <MotionDiv
+            initial="hidden"
+            animate="visible"
+            variants={cardVariants}
+            className="text-center py-8"
+          >
+            <p className="text-semantic-text-secondary mb-4">
               Click "New Set" to generate practice questions
             </p>
-            <Button onClick={handleGenerate} disabled={isGenerating}>
+            <MotionButton
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               Generate Practice Set
-            </Button>
-          </div>
+            </MotionButton>
+          </MotionDiv>
         )}
       </CardContent>
-    </Card>
+    </MotionCard>
   );
 }

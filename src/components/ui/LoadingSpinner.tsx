@@ -1,28 +1,44 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
   label?: string;
 }
 
 const sizeClasses = {
-  sm: 'h-4 w-4',
-  md: 'h-8 w-8',
-  lg: 'h-12 w-12',
+  sm: "h-4 w-4",
+  md: "h-8 w-8",
+  lg: "h-12 w-12",
 };
 
-export function LoadingSpinner({ size = 'md', className = '', label = 'Loading...' }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = "md",
+  className = "",
+  label = "Loading...",
+}: LoadingSpinnerProps) {
   return (
-    <div className={`flex items-center justify-center ${className}`} role="status" aria-live="polite">
+    <div
+      className={cn("flex items-center justify-center", className)}
+      role="status"
+      aria-live="polite"
+    >
       <svg
-        className={`animate-spin text-primary-600 ${sizeClasses[size]}`}
+        className={cn("animate-spin text-primary-600", sizeClasses[size])}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
         <path
           className="opacity-75"
           fill="currentColor"
@@ -34,7 +50,15 @@ export function LoadingSpinner({ size = 'md', className = '', label = 'Loading..
   );
 }
 
-export function LoadingOverlay({ children, isLoading, label = 'Loading...' }: { children: ReactNode; isLoading: boolean; label?: string }) {
+export function LoadingOverlay({
+  children,
+  isLoading,
+  label = "Loading...",
+}: {
+  children: ReactNode;
+  isLoading: boolean;
+  label?: string;
+}) {
   return (
     <div className="relative">
       {children}
@@ -47,7 +71,7 @@ export function LoadingOverlay({ children, isLoading, label = 'Loading...' }: { 
   );
 }
 
-export function PageLoader({ label = 'Loading...' }: { label?: string }) {
+export function PageLoader({ label = "Loading..." }: { label?: string }) {
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
       <LoadingSpinner size="lg" label={label} />
